@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class CustomerDAO {
     public boolean addCustomer(Customer customer) {
-        String sql = "INSERT INTO customers (account_number, name, address, phone) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO customers (account_number, name, address, phone, password) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -17,6 +17,7 @@ public class CustomerDAO {
             stmt.setString(2, customer.getName());
             stmt.setString(3, customer.getAddress());
             stmt.setString(4, customer.getPhone());
+            stmt.setString(5, customer.getPassword());
 
             int rows = stmt.executeUpdate();
             return rows > 0;

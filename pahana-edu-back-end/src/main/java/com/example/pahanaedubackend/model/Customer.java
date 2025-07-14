@@ -6,15 +6,17 @@ public class Customer {
     private String name;
     private String address;
     private String phone;
+    private String password;
 
     public Customer() {
     }
 
-    public Customer(String accountNumber, String name, String address, String phone) {
+    public Customer(String accountNumber, String name, String address, String phone, String password) {
         this.accountNumber = accountNumber;
         this.name = name;
         this.address = address;
         this.phone = phone;
+        this.password = password;
     }
 
     public int getId() {
@@ -55,5 +57,13 @@ public class Customer {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

@@ -20,8 +20,9 @@ public class CustomerRegisterServlet extends HelloServlet {
         String name = request.getParameter("name");
         String address = request.getParameter("address");
         String phone = request.getParameter("phone");
+        String password = request.getParameter("password");
 
-        boolean success = customerService.registerCustomer(accountNumber, name, address, phone);
+        boolean success = customerService.registerCustomer(accountNumber, name, address, phone, password);
 
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
