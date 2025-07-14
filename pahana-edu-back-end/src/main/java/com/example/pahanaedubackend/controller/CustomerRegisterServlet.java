@@ -1,7 +1,10 @@
 package com.example.pahanaedubackend.controller;
 
 import com.example.pahanaedubackend.HelloServlet;
+import com.example.pahanaedubackend.model.Customer;
 import com.example.pahanaedubackend.service.CustomerService;
+import com.example.pahanaedubackend.util.PasswordUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,18 +16,20 @@ import java.io.IOException;
 public class CustomerRegisterServlet extends HelloServlet {
     private final CustomerService customerService = new CustomerService();
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String accountNumber = request.getParameter("accountNumber");
-        String name = request.getParameter("name");
-        String address = request.getParameter("address");
-        String phone = request.getParameter("phone");
-        String password = request.getParameter("password");
+        ObjectMapper objectMapper = new ObjectMapper();
+        Customer customer = objectMapper.readValue(request.getInputStream(), Customer.class);
 
-        boolean success = customerService.registerCustomer(accountNumber, name, address, phone, password);
+        // Hash the password before saving
+        customer.setPassword(PasswordUtil.hashPassword(customer.getPassword()));
 
-        response.setContentType("text/plain");
+        boolean success = customerService.registerCustomer(customer);
+
+
+        response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         if (success) {
             response.getWriter().println("Customer registered successfully.");
