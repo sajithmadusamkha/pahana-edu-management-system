@@ -12,7 +12,7 @@ import javax.servlet.annotation.*;
 @WebServlet(value = "/test-db")
 public class HelloServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        try (Connection conn = DBUtil.getConnection()) {
+        try (Connection conn = DBUtil.getInstance().getConnection()) {
             response.getWriter().println("DB Connection Successful!");
         } catch (SQLException e) {
             response.getWriter().println("Connection Failed: " + e.getMessage());
