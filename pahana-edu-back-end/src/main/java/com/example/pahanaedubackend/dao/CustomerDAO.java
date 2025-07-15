@@ -5,6 +5,7 @@ import com.example.pahanaedubackend.util.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CustomerDAO {
@@ -26,5 +27,29 @@ public class CustomerDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public Customer getCustomerByAccountNumber(String accountNumber) {
+        String sql = "SELECT * FROM customers WHERE account_number = ?";
+        try (Connection conn = DBUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, accountNumber);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Customer customer = new Customer();
+                customer.setAccountNumber(rs.getString("account_number"));
+                customer.setName(rs.getString("name"));
+                customer.setAddress(rs.getString("address"));
+                customer.setPhone(rs.getString("phone"));
+                customer.setPassword(rs.getString("password")); // hashed password
+                return customer;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

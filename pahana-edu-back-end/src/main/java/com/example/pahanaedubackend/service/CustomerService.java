@@ -10,4 +10,11 @@ public class CustomerService {
     public boolean registerCustomer(Customer customer) {
         return customerDAO.addCustomer(customer);
     }
+
+    public boolean login(String accountNumber, String password) {
+        Customer customer = customerDAO.getCustomerByAccountNumber(accountNumber);
+        if (customer == null) return false;
+
+        return PasswordUtil.checkPassword(password, customer.getPassword());
+    }
 }

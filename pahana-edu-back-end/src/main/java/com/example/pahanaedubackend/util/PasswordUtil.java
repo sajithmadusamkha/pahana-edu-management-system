@@ -24,4 +24,8 @@ public class PasswordUtil {
             throw new RuntimeException("Error hashing password", e);
         }
     }
+
+    public static boolean checkPassword(String plainPassword, String storedHash) {
+        return hashPassword(plainPassword).equals(storedHash);
+    }
 }
