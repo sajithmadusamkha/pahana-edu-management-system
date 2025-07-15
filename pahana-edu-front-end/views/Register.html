@@ -6,6 +6,9 @@
   <title>Register</title>
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="./styles/register.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+          crossorigin="anonymous"></script>
 </head>
 <body>
 <main class="form-register">
@@ -19,8 +22,8 @@
         <label for="floatingName">Full Name</label>
       </div>
       <div class="form-floating">
-        <input type="email" class="form-control" id="floatingEmail" placeholder="name@example.com" required>
-        <label for="floatingEmail">Email address</label>
+        <input type="text" class="form-control" id="floatingAccountNo" placeholder="43304-40493-40304-05094" required>
+        <label for="floatingAccountNo">Account Number</label>
       </div>
       <div class="form-floating">
         <input type="tel" class="form-control" id="floatingTel" placeholder="Telephone Number" required>
@@ -41,10 +44,12 @@
 
       <button class="w-100 btn btn-primary mt-3" type="submit">Register</button>
       <div class="mt-4 text-center">
-        <p>Already have an account? <a href="index.html" class="login-link">Sign in</a></p>
+        <p>Already have an account? <a href="./Login.html" class="login-link">Sign in</a></p>
       </div>
     </form>
   </div>
+  <div id="message" class="mt-3"></div>
 </main>
+<script src="./js/CustomerRegister.js"></script>
 </body>
 </html>

@@ -1,6 +1,5 @@
 package com.example.pahanaedubackend.controller;
 
-import com.example.pahanaedubackend.HelloServlet;
 import com.example.pahanaedubackend.model.Customer;
 import com.example.pahanaedubackend.service.CustomerService;
 import com.example.pahanaedubackend.util.PasswordUtil;
@@ -8,12 +7,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/register-customer")
-public class CustomerRegisterServlet extends HelloServlet {
+public class CustomerRegisterServlet extends HttpServlet {
     private final CustomerService customerService = new CustomerService();
 
     @Override
