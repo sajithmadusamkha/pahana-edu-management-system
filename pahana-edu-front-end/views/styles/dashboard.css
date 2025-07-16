@@ -1,0 +1,55 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+    overflow-x: hidden; /* Prevent horizontal scroll issues */
+}
+.sidebar {
+    min-height: 100vh;
+    background-color: #ffffff;
+    border-right: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    width: 250px; /* Fixed width for sidebar */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+.sidebar .nav-link {
+    color: #495057;
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+}
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    background-color: #e9ecef;
+    color: #0d6efd;
+}
+.content {
+    margin-left: 250px; /* Match sidebar width */
+    padding: 1.5rem;
+    min-height: 100vh;
+    transition: all 0.3s ease;
+}
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    .content {
+        margin-left: 0; /* No margin when sidebar is hidden */
+    }
+}
+.stat-card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.chart-placeholder {
+    height: 300px;
+    background-color: #e9ecef;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
