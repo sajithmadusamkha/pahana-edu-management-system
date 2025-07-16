@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar col-lg-2 col-md-3 p-3 d-none d-lg-block">
+    <h5 class="fw-bold mb-4">Dashboard</h5>
+    <ul class="nav flex-column">
+        <li class="nav-item" data-nav="home">
+            <a class="nav-link active" href="#">
+                <i class="bi bi-house-door me-2"></i> Home
+            </a>
+        </li>
+        <li class="nav-item" data-nav="customers">
+            <a class="nav-link" href="#">
+                <i class="bi bi-person me-2"></i> Customers
+            </a>
+        </li>
+        <li class="nav-item" data-nav="items">
+            <a class="nav-link" href="#">
+                <i class="bi bi-cart me-2"></i> Items
+            </a>
+        </li>
+        <li class="nav-item" data-nav="settings">
+            <a class="nav-link" href="#">
+                <i class="bi bi-gear me-2"></i> Settings
+            </a>
+        </li>
+        <li class="nav-item" data-nav="view-account">
+            <a class="nav-link" href="#">
+                <i class="bi bi-person-vcard me-2"></i> View Account
+            </a>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div class="content">
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm mb-4">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <button class="btn btn-outline-primary d-lg-none me-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle sidebar">
+                    <i class="bi bi-list"></i>
+                </button>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-2"></i> <span id="userLabel">Admin</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li data-nav="profile"><a class="dropdown-item" href="#">Profile</a></li>
+                            <li data-nav="settings"><a class="dropdown-item" href="#">Settings</a></li>
+                            <li><hr class="dropdown-divider" data-nav="divider"></li>
+                            <li data-nav="logout"><a class="dropdown-item" href="#">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Collapsible Sidebar for Mobile -->
+    <div class="collapse d-lg-none" id="sidebarMenu">
+        <div class="sidebar col-12 p-3">
+            <h5 class="fw-bold mb-4">Dashboard</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item" data-nav="home">
+                    <a class="nav-link active" href="#">
+                        <i class="bi bi-house-door me-2"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item" data-nav="customers">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-person me-2"></i> Customers
+                    </a>
+                </li>
+                <li class="nav-item" data-nav="items">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-cart me-2"></i> Items
+                    </a>
+                </li>
+                <li class="nav-item" data-nav="settings">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-gear me-2"></i> Settings
+                    </a>
+                </li>
+                <li class="nav-item" data-nav="view-account">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-person-vcard me-2"></i> View Account
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Key Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card bg-white p-4">
+                <h6 class="text-muted">Total Users</h6>
+                <h3 class="fw-bold">1,234</h3>
+                <small class="text-success">+5% from last month</small>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card bg-white p-4">
+                <h6 class="text-muted">Revenue</h6>
+                <h3 class="fw-bold">$12,345</h3>
+                <small class="text-success">+8% from last month</small>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card bg-white p-4">
+                <h6 class="text-muted">Total Sales</h6>
+                <h3 class="fw-bold">567</h3>
+                <small class="text-danger">-2% from last month</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Placeholder -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Sales Overview</h5>
+            <div class="chart-placeholder">
+                <p class="text-muted">Chart Placeholder (e.g., Line Chart for Sales Data)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Recent Activity</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">User <strong>John Doe</strong> registered <span class="text-muted">2 hours ago</span></li>
+                <li class="list-group-item">Order #1234 placed for $150 <span class="text-muted">4 hours ago</span></li>
+                <li class="list-group-item">User <strong>Jane Smith</strong> updated profile <span class="text-muted">1 day ago</span></li>
+                <li class="list-group-item">New comment on product <span class="text-muted">2 days ago</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS and Popper -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Toggle sidebar on mobile
+        $('.btn-outline-primary').click(function () {
+            $('.sidebar').toggleClass('active');
+        });
+
+        // Role-based sidebar and navbar control
+        const userRole = localStorage.getItem('userRole');
+        if (userRole === 'C') {
+            $('.sidebar .nav-item').hide();
+            $('.sidebar [data-nav="view-account"]').show();
+            // Navbar: Set label to Customer and show only Profile, Logout, and divider
+            $('#userLabel').text('Customer');
+            $('.dropdown-menu li').hide();
+            $('.dropdown-menu [data-nav="profile"]').show();
+            $('.dropdown-menu [data-nav="logout"]').show();
+            $('.dropdown-menu [data-nav="divider"]').show();
+        } else {
+            // Sidebar: Show all nav items
+            $('.nav-item').show();
+            // Navbar: Set label to Admin and show all dropdown items
+            $('#userLabel').text('Admin');
+            $('.dropdown-menu li').show();
+        }
+
+        // Logout functionality
+        $('[data-nav="logout"]').click(function (e) {
+            e.preventDefault();
+            localStorage.removeItem('userRole');
+            window.location.href = './Login.html';
+        });
+    });
+</script>
+</body>
+</html>
