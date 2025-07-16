@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @WebServlet("/register-customer")
 public class CustomerRegisterServlet extends HttpServlet {
@@ -20,21 +22,35 @@ public class CustomerRegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        Customer customer = objectMapper.readValue(request.getInputStream(), Customer.class);
-
-        // Hash the password before saving
-        customer.setPassword(PasswordUtil.hashPassword(customer.getPassword()));
-
-        boolean success = customerService.registerCustomer(customer);
-
-
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> data = mapper.readValue(request.getInputStream(), Map.class);
+
+        String accountNumber = data.get("accountNumber");
+        String name = data.get("name");
+        String phone = data.get("phone");
+        String address = data.get("address");
+        String password = data.get("password");
+
+        Customer customer = new Customer();
+        customer.setAccountNumber(accountNumber);
+        customer.setName(name);
+        customer.setAddress(address);
+        customer.setPhone(phone);
+
+        boolean success = customerService.registerCustomer(customer, password);
+
+        Map<String, Object> res = new HashMap<>();
         if (success) {
-            response.getWriter().println("Customer registered successfully.");
+            res.put("success", true);
+            res.put("message", "Customer registered successfully");
         } else {
-            response.getWriter().println("Failed to register customer.");
+            res.put("success", false);
+            res.put("message", "Failed to register customer");
         }
+
+        mapper.writeValue(response.getWriter(), res);
     }
 }

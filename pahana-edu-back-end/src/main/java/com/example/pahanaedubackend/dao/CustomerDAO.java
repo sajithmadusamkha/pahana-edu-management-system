@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class CustomerDAO {
     public boolean addCustomer(Customer customer) {
-        String sql = "INSERT INTO customers (account_number, name, address, phone, password) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO customer (account_number, name, address, phone) VALUES (?, ?, ?, ?)";
         try (Connection conn = DBUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -18,7 +18,6 @@ public class CustomerDAO {
             stmt.setString(2, customer.getName());
             stmt.setString(3, customer.getAddress());
             stmt.setString(4, customer.getPhone());
-            stmt.setString(5, customer.getPassword());
 
             int rows = stmt.executeUpdate();
             return rows > 0;
@@ -30,7 +29,7 @@ public class CustomerDAO {
     }
 
     public Customer getCustomerByAccountNumber(String accountNumber) {
-        String sql = "SELECT * FROM customers WHERE account_number = ?";
+        String sql = "SELECT * FROM customer WHERE account_number = ?";
         try (Connection conn = DBUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -42,8 +41,7 @@ public class CustomerDAO {
                 customer.setAccountNumber(rs.getString("account_number"));
                 customer.setName(rs.getString("name"));
                 customer.setAddress(rs.getString("address"));
-                customer.setPhone(rs.getString("phone"));
-                customer.setPassword(rs.getString("password")); // hashed password
+                customer.setPhone(rs.getString("phone"));// hashed password
                 return customer;
             }
 

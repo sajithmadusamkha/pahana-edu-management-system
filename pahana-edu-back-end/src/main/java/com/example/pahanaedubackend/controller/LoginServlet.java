@@ -1,6 +1,7 @@
 package com.example.pahanaedubackend.controller;
 
-import com.example.pahanaedubackend.service.CustomerService;
+import com.example.pahanaedubackend.model.User;
+import com.example.pahanaedubackend.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -14,42 +15,38 @@ import java.util.HashMap;
 import java.util.Map;
 
 @WebServlet("/login")
-public class CustomerLoginServlet extends HttpServlet {
-
-    private final CustomerService customerService = new CustomerService();
+public class LoginServlet extends HttpServlet {
+    private final UserService userService = new UserService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Set response headers
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> loginRequest = mapper.readValue(request.getInputStream(), Map.class);
+        Map<String, String> loginData = mapper.readValue(request.getInputStream(), Map.class);
 
-        String accountNumber = loginRequest.get("accountNumber");
-        String password = loginRequest.get("password");
+        String username = loginData.get("username");
+        String password = loginData.get("password");
 
-        boolean success = customerService.login(accountNumber, password);
+        User user = userService.authenticate(username, password);
 
-        if (success) {
+        Map<String, Object> responseMap = new HashMap<>();
+        if (user != null) {
             HttpSession session = request.getSession(true);
-            session.setAttribute("accountNumber", accountNumber);
+            session.setAttribute("username", user.getUsername());
+            session.setAttribute("role", user.getRole());
 
-            Map<String, Object> responseMap = new HashMap<>();
             responseMap.put("success", true);
+            responseMap.put("role", user.getRole());
             responseMap.put("message", "Login successful");
-
-            mapper.writeValue(response.getWriter(), responseMap);
         } else {
-            Map<String, Object> responseMap = new HashMap<>();
             responseMap.put("success", false);
-            responseMap.put("message", "Invalid account number or password");
-
-            mapper.writeValue(response.getWriter(), responseMap);
+            responseMap.put("message", "Invalid username or password");
         }
+
+        mapper.writeValue(response.getWriter(), responseMap);
     }
 }
-
