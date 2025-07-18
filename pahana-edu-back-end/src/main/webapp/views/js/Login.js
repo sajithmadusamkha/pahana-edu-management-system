@@ -16,7 +16,7 @@ $(document).ready(function () {
         };
         $.ajax({
             type: "POST",
-            url: "http://localhost:8080/pahana_edu_back_end_war_exploded/login", // Placeholder URL
+            url: "http://localhost:8080/pahana/login", // Placeholder URL
             contentType: "application/json",
             data: JSON.stringify(loginData),
             success: function (response) {
@@ -37,7 +37,7 @@ $(document).ready(function () {
                 toast.show();
                 $("#loginForm")[0].reset();
                 setTimeout(() => {
-                    window.location.href = "./Dashboard.html"; // Redirect to dashboard
+                    window.location.href = "/pahana/views/Dashboard.html" // Redirect to dashboard
                 }, 1000);
             },
             error: function () {
