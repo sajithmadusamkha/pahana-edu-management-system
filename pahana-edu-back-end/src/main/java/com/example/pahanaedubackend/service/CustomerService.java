@@ -5,18 +5,24 @@ import com.example.pahanaedubackend.dao.UserDAO;
 import com.example.pahanaedubackend.model.Customer;
 import com.example.pahanaedubackend.util.PasswordUtil;
 
+import java.util.List;
+
 public class CustomerService {
     private final CustomerDAO customerDAO = new CustomerDAO();
-    private final UserDAO userDAO = new UserDAO(); // ✅ Add this line
 
-    public boolean registerCustomer(Customer customer, String plainPassword) {
-        boolean profileSaved = customerDAO.addCustomer(customer);
+    public boolean registerCustomer(Customer customer) {
+        return customerDAO.addCustomer(customer);
+    }
 
-        if (profileSaved) {
-            String hashedPassword = PasswordUtil.hashPassword(plainPassword);
-            return userDAO.createUser(customer.getAccountNumber(), hashedPassword, "C");
-        }
+    public List<Customer> getAllCustomers() {
+        return customerDAO.getAllCustomers();
+    }
 
-        return false;
+    public boolean updateCustomer(Customer customer) {
+        return customerDAO.updateCustomer(customer);
+    }
+
+    public boolean deleteCustomer(String accountNumber) {
+        return customerDAO.deleteCustomer(accountNumber);
     }
 }

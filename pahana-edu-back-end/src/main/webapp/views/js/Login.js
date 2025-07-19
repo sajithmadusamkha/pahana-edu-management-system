@@ -37,7 +37,7 @@ $(document).ready(function () {
                 toast.show();
                 $("#loginForm")[0].reset();
                 setTimeout(() => {
-                    window.location.href = "/pahana/views/Dashboard.html" // Redirect to dashboard
+                    window.location.href = "/views/dashboard.html" // Redirect to dashboard
                 }, 1000);
             },
             error: function () {

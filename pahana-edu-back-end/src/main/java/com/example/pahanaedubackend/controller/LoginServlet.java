@@ -1,9 +1,7 @@
 package com.example.pahanaedubackend.controller;
 
 import com.example.pahanaedubackend.model.Admin;
-import com.example.pahanaedubackend.model.User;
 import com.example.pahanaedubackend.service.AdminService;
-import com.example.pahanaedubackend.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
