@@ -27,20 +27,18 @@ public class AdminRegisterServlet  extends HttpServlet {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> data = mapper.readValue(request.getInputStream(), Map.class);
 
-        String username = data.get("username");
-        String fullName = data.get("fullName");
-        String password = data.get("password");
-
         Admin admin = new Admin();
-        admin.setUsername(username);
-        admin.setFullName(fullName);
+        admin.setUsername(data.get("username"));
+        admin.setFullName(data.get("fullName"));
+        admin.setEmail(data.get("email"));
 
+        String password = data.get("password");
         boolean success = adminService.registerAdmin(admin, password);
 
-        Map<String, Object> res = new HashMap<>();
-        res.put("success", success);
-        res.put("message", success ? "Admin registered successfully" : "Admin registration failed");
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", success);
+        result.put("message", success ? "Admin registered successfully" : "Registration failed");
 
-        mapper.writeValue(response.getWriter(), res);
+        mapper.writeValue(response.getWriter(), result);
     }
 }
