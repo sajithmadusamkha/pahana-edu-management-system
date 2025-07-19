@@ -1,8 +1,6 @@
 package com.example.pahanaedubackend.controller;
 
-import com.example.pahanaedubackend.model.Customer;
 import com.example.pahanaedubackend.service.CustomerService;
-import com.example.pahanaedubackend.util.PasswordUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -15,14 +13,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet("/register-customer")
-public class CustomerRegisterServlet extends HttpServlet {
+@WebServlet("/delete-customer")
+public class DeleteCustomerServlet extends HttpServlet {
     private final CustomerService customerService = new CustomerService();
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -30,26 +27,19 @@ public class CustomerRegisterServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("admin") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"success\":false, \"message\":\"Unauthorized: Admin login required\"}");
+            response.getWriter().write("{\"success\":false,\"message\":\"Unauthorized: Admin login required\"}");
             return;
         }
 
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> data = mapper.readValue(request.getInputStream(), Map.class);
+        String accountNumber = data.get("accountNumber");
 
-        Customer customer = new Customer();
-        customer.setAccountNumber(data.get("accountNumber"));
-        customer.setFullName(data.get("fullName"));
-        customer.setTelephone(data.get("telephone"));
-        customer.setAddress(data.get("address"));
-        customer.setUnitsConsumed(Integer.parseInt(data.get("unitsConsumed")));
-
-        boolean success = customerService.registerCustomer(customer);
+        boolean success = customerService.deleteCustomer(accountNumber);
 
         Map<String, Object> result = new HashMap<>();
         result.put("success", success);
-        result.put("message", success ? "Customer registered successfully" : "Customer registration failed");
-
+        result.put("message", success ? "Customer deleted successfully" : "Customer deletion failed");
         mapper.writeValue(response.getWriter(), result);
     }
 }

@@ -3,18 +3,17 @@ package com.example.pahanaedubackend.model;
 public class Customer {
     private int id;
     private String accountNumber;
-    private String name;
+    private String fullName;
+    private String telephone;
     private String address;
-    private String phone;
+    private int unitsConsumed;
 
-    public Customer() {
+    public int getUnitsConsumed() {
+        return unitsConsumed;
     }
 
-    public Customer(String accountNumber, String name, String address, String phone) {
-        this.accountNumber = accountNumber;
-        this.name = name;
-        this.address = address;
-        this.phone = phone;
+    public void setUnitsConsumed(int unitsConsumed) {
+        this.unitsConsumed = unitsConsumed;
     }
 
     public int getId() {
@@ -33,12 +32,20 @@ public class Customer {
         this.accountNumber = accountNumber;
     }
 
-    public String getName() {
-        return name;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
     public String getAddress() {
@@ -47,13 +54,5 @@ public class Customer {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 }
