@@ -1,6 +1,8 @@
 package com.example.pahanaedubackend.controller;
 
+import com.example.pahanaedubackend.model.Admin;
 import com.example.pahanaedubackend.model.User;
+import com.example.pahanaedubackend.service.AdminService;
 import com.example.pahanaedubackend.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,7 +18,7 @@ import java.util.Map;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-    private final UserService userService = new UserService();
+    private final AdminService adminService = new AdminService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -26,27 +28,26 @@ public class LoginServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> loginData = mapper.readValue(request.getInputStream(), Map.class);
+        Map<String, String> data = mapper.readValue(request.getInputStream(), Map.class);
 
-        String username = loginData.get("username");
-        String password = loginData.get("password");
+        String username = data.get("username");
+        String password = data.get("password");
 
-        User user = userService.authenticate(username, password);
+        Admin admin = adminService.login(username, password);
 
-        Map<String, Object> responseMap = new HashMap<>();
-        if (user != null) {
+        Map<String, Object> result = new HashMap<>();
+        if (admin != null) {
             HttpSession session = request.getSession(true);
-            session.setAttribute("username", user.getUsername());
-            session.setAttribute("role", user.getRole());
+            session.setAttribute("admin", admin);
 
-            responseMap.put("success", true);
-            responseMap.put("role", user.getRole());
-            responseMap.put("message", "Login successful");
+            result.put("success", true);
+            result.put("message", "Login successful");
+            result.put("username", admin.getUsername());
         } else {
-            responseMap.put("success", false);
-            responseMap.put("message", "Invalid username or password");
+            result.put("success", false);
+            result.put("message", "Invalid username or password");
         }
 
-        mapper.writeValue(response.getWriter(), responseMap);
+        mapper.writeValue(response.getWriter(), result);
     }
 }

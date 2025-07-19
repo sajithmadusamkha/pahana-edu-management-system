@@ -7,16 +7,18 @@ import com.example.pahanaedubackend.util.PasswordUtil;
 
 public class AdminService {
     private final AdminDAO adminDAO = new AdminDAO();
-    private final UserDAO userDAO = new UserDAO();
 
     public boolean registerAdmin(Admin admin, String plainPassword) {
-        boolean profileSaved = adminDAO.addAdmin(admin);
+        String hashedPassword = PasswordUtil.hashPassword(plainPassword);
+        admin.setPassword(hashedPassword);
+        return adminDAO.addAdmin(admin);
+    }
 
-        if (profileSaved) {
-            String hashedPassword = PasswordUtil.hashPassword(plainPassword);
-            return userDAO.createUser(admin.getUsername(), hashedPassword, "A");
+    public Admin login(String username, String plainPassword) {
+        Admin admin = adminDAO.getAdminByUsername(username);
+        if (admin != null && PasswordUtil.checkPassword(plainPassword, admin.getPassword())) {
+            return admin;
         }
-
-        return false;
+        return null;
     }
 }
