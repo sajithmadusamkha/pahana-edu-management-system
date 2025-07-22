@@ -3,6 +3,7 @@ package com.example.pahanaedubackend.controller;
 import com.example.pahanaedubackend.model.BillItem;
 import com.example.pahanaedubackend.service.BillService;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.annotation.WebServlet;
@@ -25,8 +26,14 @@ public class CreateBillServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            List<BillItem> items = mapper.readValue(request.getInputStream(), new TypeReference<List<BillItem>>() {});
-            boolean success = billService.createBill(items);
+            // Parse JSON request body
+            JsonNode jsonNode = mapper.readTree(request.getInputStream());
+            String customerAccountNumber = jsonNode.get("customerAccountNumber").asText();
+            List<BillItem> items = mapper.convertValue(jsonNode.get("items"),
+                    mapper.getTypeFactory().constructCollectionType(List.class, BillItem.class));
+
+            // Call service
+            boolean success = billService.createBill(customerAccountNumber, items);
 
             if (success) {
                 response.getWriter().write("{\"success\":true,\"message\":\"Bill created and stock updated\"}");
@@ -34,6 +41,7 @@ public class CreateBillServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().write("{\"success\":false,\"message\":\"Insufficient stock or error occurred\"}");
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

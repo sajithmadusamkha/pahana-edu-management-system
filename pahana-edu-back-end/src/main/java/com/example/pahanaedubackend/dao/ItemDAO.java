@@ -108,4 +108,23 @@ public class ItemDAO {
         }
         return null;
     }
+
+    public boolean updateStock(int itemId, int newStock) {
+        String sql = "UPDATE items SET quantity = ? WHERE id = ?";
+
+        try (Connection conn = DBUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, newStock);
+            stmt.setInt(2, itemId);
+
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }
