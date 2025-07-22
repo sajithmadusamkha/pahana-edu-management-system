@@ -1,0 +1,51 @@
+package com.example.pahanaedubackend.controller;
+
+import com.example.pahanaedubackend.model.BillItem;
+import com.example.pahanaedubackend.service.BillService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+
+@WebServlet("/bills-create")
+public class CreateBillServlet extends HttpServlet {
+    private final BillService billService = new BillService();
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        try {
+            // Parse JSON request body
+            JsonNode jsonNode = mapper.readTree(request.getInputStream());
+            String customerAccountNumber = jsonNode.get("customerAccountNumber").asText();
+            List<BillItem> items = mapper.convertValue(jsonNode.get("items"),
+                    mapper.getTypeFactory().constructCollectionType(List.class, BillItem.class));
+
+            // Call service
+            boolean success = billService.createBill(customerAccountNumber, items);
+
+            if (success) {
+                response.getWriter().write("{\"success\":true,\"message\":\"Bill created and stock updated\"}");
+            } else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"success\":false,\"message\":\"Insufficient stock or error occurred\"}");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"success\":false,\"message\":\"Server error\"}");
+        }
+    }
+}
