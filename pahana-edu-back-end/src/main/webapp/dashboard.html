@@ -179,7 +179,7 @@
                     <label for="unitsConsumed">Units Consumed</label>
                 </div>
             </div>
-            <button class="btn btn-primary" type="submit">
+            <button class="btn btn-primary" type="button" id="btnAddCustomer">
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 Add Customer
             </button>
@@ -214,8 +214,8 @@
                     <div class="modal-body">
                         <form id="updateCustomerForm">
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="updateAccountNumber" placeholder="Account Number" required pattern="[A-Za-z0-9]{5,}">
-                                <label for="updateAccountNumber">Account Number</label>
+                                <input type="text" class="form-control" id="updateAccountNumber" placeholder="Account Number" readonly>
+                                <label for="updateAccountNumber">Account Number (Read-only)</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="updateName" placeholder="Name" required pattern="[A-Za-z\s]{2,}">
