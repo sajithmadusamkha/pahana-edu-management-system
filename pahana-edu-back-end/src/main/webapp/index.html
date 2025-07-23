@@ -121,7 +121,7 @@
                     toast.show();
                     $("#loginForm")[0].reset();
                     setTimeout(() => {
-                        window.location.href = "dashboard.html" // Redirect to dashboard
+                        window.location.href = "dashboard.html?fresh=true" // Redirect to dashboard with fresh login flag
                     }, 1000);
                 },
                 error: function () {
