@@ -31,12 +31,12 @@
         </li>
         <li class="nav-item" data-nav="place-order">
             <a class="nav-link" href="#">
-                <i class="bi bi-gear me-2"></i> Place Order
+                <i class="bi bi-receipt me-2"></i> Place Order
             </a>
         </li>
-        <li class="nav-item" data-nav="view-account">
+        <li class="nav-item" data-nav="help">
             <a class="nav-link" href="#">
-                <i class="bi bi-person-vcard me-2"></i> View Account
+                <i class="bi bi-question-circle me-2"></i> Help Section
             </a>
         </li>
     </ul>
@@ -93,12 +93,12 @@
                 </li>
                 <li class="nav-item" data-nav="place-order">
                     <a class="nav-link" href="#">
-                        <i class="bi bi-gear me-2"></i> Place Order
+                        <i class="bi bi-receipt me-2"></i> Place Order
                     </a>
                 </li>
-                <li class="nav-item" data-nav="view-account">
+                <li class="nav-item" data-nav="help">
                     <a class="nav-link" href="#">
-                        <i class="bi bi-person-vcard me-2"></i> View Account
+                        <i class="bi bi-question-circle me-2"></i> Help Section
                     </a>
                 </li>
             </ul>
@@ -106,32 +106,53 @@
     </div>
 
     <!-- Key Statistics Cards -->
-    <div class="row g-4 mb-4">
+    <div id="homeStatistics" class="row g-4 mb-4">
         <div class="col-md-4">
-            <div class="stat-card bg-white p-4">
-                <h6 class="text-muted">Total Users</h6>
-                <h3 class="fw-bold">1,234</h3>
-                <small class="text-success">+5% from last month</small>
+            <div class="stat-card bg-white p-4 border-start border-primary border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Total Customers</h6>
+                        <h3 class="fw-bold mb-0" id="totalCustomersCard">0</h3>
+                        <small class="text-muted">Registered customers</small>
+                    </div>
+                    <div class="text-primary">
+                        <i class="bi bi-people fs-1"></i>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="stat-card bg-white p-4">
-                <h6 class="text-muted">Revenue</h6>
-                <h3 class="fw-bold">$12,345</h3>
-                <small class="text-success">+8% from last month</small>
+            <div class="stat-card bg-white p-4 border-start border-success border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Total Revenue</h6>
+                        <h3 class="fw-bold mb-0" id="totalRevenueCard">$0.00</h3>
+                        <small class="text-muted">From all sales</small>
+                    </div>
+                    <div class="text-success">
+                        <i class="bi bi-currency-dollar fs-1"></i>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="stat-card bg-white p-4">
-                <h6 class="text-muted">Total Sales</h6>
-                <h3 class="fw-bold">567</h3>
-                <small class="text-danger">-2% from last month</small>
+            <div class="stat-card bg-white p-4 border-start border-info border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Total Orders</h6>
+                        <h3 class="fw-bold mb-0" id="totalOrdersCard">0</h3>
+                        <small class="text-muted">Completed orders</small>
+                    </div>
+                    <div class="text-info">
+                        <i class="bi bi-receipt fs-1"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Chart Placeholder -->
-    <div class="card mb-4">
+    <div id="homeChart" class="card mb-4">
         <div class="card-body">
             <h5 class="card-title">Sales Overview</h5>
             <div class="chart-placeholder">
@@ -141,7 +162,7 @@
     </div>
 
     <!-- Recent Activity -->
-    <div class="card">
+    <div id="homeActivity" class="card">
         <div class="card-body">
             <h5 class="card-title">Recent Activity</h5>
             <ul class="list-group list-group-flush">
@@ -155,53 +176,95 @@
 
     <!-- Manage Customers Section -->
     <div class="manage-customers">
-        <h2>Manage Customers</h2>
-        <form id="customerForm">
-            <div class="form-grid">
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="accountNumber" placeholder="Account Number" aria-label="Account Number" required pattern="[A-Za-z0-9]{5,}">
-                    <label for="accountNumber">Account Number</label>
-                </div>
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="name" placeholder="Name" aria-label="Name" required pattern="[A-Za-z\s]{2,}">
-                    <label for="name">Name</label>
-                </div>
-                <div class="form-floating">
-                    <textarea class="form-control" id="address" placeholder="Address" aria-label="Address" required></textarea>
-                    <label for="address">Address</label>
-                </div>
-                <div class="form-floating">
-                    <input type="tel" class="form-control" id="telephone" placeholder="Telephone Number" aria-label="Telephone Number" required pattern="[0-9]{10}">
-                    <label for="telephone">Telephone Number</label>
-                </div>
-                <div class="form-floating">
-                    <input type="number" class="form-control" id="unitsConsumed" placeholder="Units Consumed" aria-label="Units Consumed" required min="0">
-                    <label for="unitsConsumed">Units Consumed</label>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-person-lines-fill me-2"></i>Manage Customers</h2>
+            <span class="badge bg-primary fs-6">Total: <span id="totalCustomers">0</span></span>
+        </div>
+
+        <!-- Add Customer Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-person-plus me-2"></i>Add New Customer</h5>
+            </div>
+            <div class="card-body">
+                <form id="customerForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="accountNumber" placeholder="Account Number" aria-label="Account Number" required pattern="[A-Za-z0-9]{5,}">
+                                <label for="accountNumber">Account Number</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="name" placeholder="Name" aria-label="Name" required pattern="[A-Za-z\s]{2,}">
+                                <label for="name">Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="tel" class="form-control" id="telephone" placeholder="Telephone Number" aria-label="Telephone Number" required pattern="[0-9]{10}">
+                                <label for="telephone">Telephone Number</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="unitsConsumed" placeholder="Units Consumed" aria-label="Units Consumed" required min="0">
+                                <label for="unitsConsumed">Units Consumed</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <textarea class="form-control" id="address" placeholder="Address" aria-label="Address" style="height: 100px" required></textarea>
+                                <label for="address">Address</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-primary" type="button" id="btnAddCustomer">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                            <i class="bi bi-person-plus me-2"></i>Add Customer
+                        </button>
+                        <button class="btn btn-outline-secondary ms-2" type="reset">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Customers List Card -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-people me-2"></i>Customer List</h5>
+                <button class="btn btn-outline-primary btn-sm" onclick="loadAllCustomers()">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                        <tr>
+                            <th data-sort="accountNumber">Account Number <i class="bi bi-arrow-down-up"></i></th>
+                            <th data-sort="name">Name <i class="bi bi-arrow-down-up"></i></th>
+                            <th data-sort="address">Address</th>
+                            <th data-sort="telephone">Telephone Number</th>
+                            <th data-sort="unitsConsumed">Units Consumed <i class="bi bi-arrow-down-up"></i></th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="customerTableBody">
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-people fs-1 text-muted d-block mb-2"></i>
+                                No customers added yet.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <button class="btn btn-primary" type="button" id="btnAddCustomer">
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Add Customer
-            </button>
-        </form>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th data-sort="accountNumber">Account Number <i class="bi bi-arrow-down-up"></i></th>
-                    <th data-sort="name">Name <i class="bi bi-arrow-down-up"></i></th>
-                    <th data-sort="address">Address</th>
-                    <th data-sort="telephone">Telephone Number</th>
-                    <th data-sort="unitsConsumed">Units Consumed <i class="bi bi-arrow-down-up"></i></th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody id="customerTableBody">
-                <tr>
-                    <td colspan="6" class="text-center text-muted">No customers added yet.</td>
-                </tr>
-                </tbody>
-            </table>
         </div>
         <!-- Update Customer Modal -->
         <div class="modal fade" id="updateCustomerModal" tabindex="-1" aria-labelledby="updateCustomerModalLabel" aria-hidden="true">
@@ -246,44 +309,82 @@
 
     <!-- Manage Items Section -->
     <div class="manage-items" style="display: none;">
-        <h2>Manage Items</h2>
-        <form id="itemForm">
-            <div class="form-grid">
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="itemName" placeholder="Item Name" aria-label="Item Name" required pattern="[A-Za-z0-9\s]{2,}">
-                    <label for="itemName">Item Name</label>
-                </div>
-                <div class="form-floating">
-                    <input type="number" class="form-control" id="itemPrice" placeholder="Price" aria-label="Price" required min="0" step="0.01">
-                    <label for="itemPrice">Price ($)</label>
-                </div>
-                <div class="form-floating">
-                    <input type="number" class="form-control" id="itemQuantity" placeholder="Quantity" aria-label="Quantity" required min="0">
-                    <label for="itemQuantity">Quantity</label>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-box-seam me-2"></i>Manage Items</h2>
+            <span class="badge bg-primary fs-6">Total: <span id="totalItems">0</span></span>
+        </div>
+
+        <!-- Add Item Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Add New Item</h5>
+            </div>
+            <div class="card-body">
+                <form id="itemForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="itemName" placeholder="Item Name" aria-label="Item Name" required pattern="[A-Za-z0-9\s]{2,}">
+                                <label for="itemName">Item Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="itemPrice" placeholder="Price" aria-label="Price" required min="0" step="0.01">
+                                <label for="itemPrice">Price ($)</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="itemQuantity" placeholder="Quantity" aria-label="Quantity" required min="0">
+                                <label for="itemQuantity">Quantity</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-primary" type="button" id="btnAddItem">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                            <i class="bi bi-plus-circle me-2"></i>Add Item
+                        </button>
+                        <button class="btn btn-outline-secondary ms-2" type="reset">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Items List Card -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Item List</h5>
+                <button class="btn btn-outline-primary btn-sm" onclick="loadAllItems()">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                        <tr>
+                            <th data-sort="id">ID <i class="bi bi-arrow-down-up"></i></th>
+                            <th data-sort="name">Name <i class="bi bi-arrow-down-up"></i></th>
+                            <th data-sort="price">Price <i class="bi bi-arrow-down-up"></i></th>
+                            <th data-sort="quantity">Quantity <i class="bi bi-arrow-down-up"></i></th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="itemTableBody">
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="bi bi-box-seam fs-1 text-muted d-block mb-2"></i>
+                                No items added yet.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <button class="btn btn-primary" type="button" id="btnAddItem">
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                Add Item
-            </button>
-        </form>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th data-sort="id">ID <i class="bi bi-arrow-down-up"></i></th>
-                    <th data-sort="name">Name <i class="bi bi-arrow-down-up"></i></th>
-                    <th data-sort="price">Price <i class="bi bi-arrow-down-up"></i></th>
-                    <th data-sort="quantity">Quantity <i class="bi bi-arrow-down-up"></i></th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody id="itemTableBody">
-                <tr>
-                    <td colspan="5" class="text-center text-muted">No items added yet.</td>
-                </tr>
-                </tbody>
-            </table>
         </div>
         <!-- Update Item Modal -->
         <div class="modal fade" id="updateItemModal" tabindex="-1" aria-labelledby="updateItemModalLabel" aria-hidden="true">
@@ -317,6 +418,316 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" id="saveUpdateItem">Save Changes</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Place Order Section -->
+    <div class="place-order" style="display: none;">
+        <h2>Place Order</h2>
+
+        <!-- Customer Selection -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Select Customer</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="customerSelect" required>
+                                <option value="">Select a customer...</option>
+                            </select>
+                            <label for="customerSelect">Customer</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="customerInfo" class="mt-2" style="display: none;">
+                            <small class="text-muted">
+                                <strong>Account:</strong> <span id="selectedCustomerAccount"></span><br>
+                                <strong>Address:</strong> <span id="selectedCustomerAddress"></span><br>
+                                <strong>Phone:</strong> <span id="selectedCustomerPhone"></span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Item Selection -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Add Items to Order</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <select class="form-select" id="orderItemSelect">
+                                <option value="">Select an item...</option>
+                            </select>
+                            <label for="orderItemSelect">Item</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="orderItemQuantity" placeholder="Quantity" min="1" value="1">
+                            <label for="orderItemQuantity">Quantity</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="orderItemPrice" placeholder="Price" readonly>
+                            <label for="orderItemPrice">Unit Price ($)</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary h-100" type="button" id="addItemBtn">
+                            <i class="bi bi-plus-circle"></i> Add
+                        </button>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-4">
+                        <small class="text-muted">Available: <span id="availableStock">0</span></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Order Summary</h5>
+                <button class="btn btn-outline-danger btn-sm" id="clearOrderBtn">
+                    <i class="bi bi-trash"></i> Clear All
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderItemsTable">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No items added to order yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-8"></div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Amount</h5>
+                                <h3 class="text-primary" id="orderTotal">$0.00</h3>
+                                <button class="btn btn-success btn-lg w-100 mt-2" id="placeOrderBtn" disabled>
+                                    <i class="bi bi-check-circle"></i> Place Order
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bill Display Section (Hidden initially) -->
+        <div class="card" id="billDisplaySection" style="display: none;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Order Successful - Bill Generated</h5>
+                <div>
+                    <button class="btn btn-outline-primary btn-sm me-2" id="printBillBtn">
+                        <i class="bi bi-printer"></i> Print Bill
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" id="newOrderBtn">
+                        <i class="bi bi-plus-circle"></i> New Order
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="printableBill">
+                    <!-- Bill content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-section" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-question-circle me-2"></i>Help & User Guide</h2>
+            <span class="badge bg-info fs-6">System Guide</span>
+        </div>
+
+        <!-- Quick Start Guide -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-play-circle me-2"></i>Quick Start Guide</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="badge bg-primary rounded-pill me-3">1</div>
+                            <div>
+                                <h6 class="fw-bold">Add Customers</h6>
+                                <p class="text-muted mb-0">Start by adding customers with their account details, contact information, and address.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="badge bg-primary rounded-pill me-3">2</div>
+                            <div>
+                                <h6 class="fw-bold">Manage Items</h6>
+                                <p class="text-muted mb-0">Add items/products with their prices and quantities to your inventory.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="badge bg-primary rounded-pill me-3">3</div>
+                            <div>
+                                <h6 class="fw-bold">Place Orders</h6>
+                                <p class="text-muted mb-0">Create orders by selecting customers and adding items with quantities.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="badge bg-primary rounded-pill me-3">4</div>
+                            <div>
+                                <h6 class="fw-bold">Print Bills</h6>
+                                <p class="text-muted mb-0">Generate and print professional bills after successful order placement.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Guide -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-people me-2"></i>Customer Management</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Add new customers with unique account numbers</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Update customer information anytime</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>View all customers in organized table</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Sort customers by different fields</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Delete customers when needed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-box-seam me-2"></i>Item Management</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Add items with name, price, and quantity</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Update item details and stock levels</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Automatic stock management</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>View low stock items</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Delete unused items</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Order Management</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Select customer from dropdown</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Add multiple items to order</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Real-time stock validation</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>View order summary with totals</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Remove items from order</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-printer me-2"></i>Bill Generation</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Automatic bill generation after order</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Professional bill format</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Customer and item details included</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Print-friendly layout</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Save as PDF option</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips and Tricks -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-lightbulb me-2"></i>Tips & Best Practices</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">💡 Pro Tips</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">• Use unique account numbers for customers</li>
+                            <li class="mb-2">• Keep item stock levels updated</li>
+                            <li class="mb-2">• Double-check order details before placing</li>
+                            <li class="mb-2">• Print bills immediately after order completion</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-success">✅ Best Practices</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">• Regular backup of customer data</li>
+                            <li class="mb-2">• Monitor stock levels regularly</li>
+                            <li class="mb-2">• Use clear, descriptive item names</li>
+                            <li class="mb-2">• Keep customer information up to date</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Support -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-headset me-2"></i>Need More Help?</h5>
+            </div>
+            <div class="card-body text-center">
+                <p class="text-muted">If you need additional assistance or have questions about using the system:</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button class="btn btn-outline-primary">
+                        <i class="bi bi-envelope me-2"></i>Contact Support
+                    </button>
+                    <button class="btn btn-outline-info">
+                        <i class="bi bi-book me-2"></i>User Manual
+                    </button>
+                    <button class="btn btn-outline-success">
+                        <i class="bi bi-chat-dots me-2"></i>Live Chat
+                    </button>
                 </div>
             </div>
         </div>

@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -25,6 +26,13 @@ public class CreateBillServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("admin") == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"success\":false,\"message\":\"Unauthorized: Admin login required\"}");
+            return;
+        }
+
         try {
             // Parse JSON request body
             JsonNode jsonNode = mapper.readTree(request.getInputStream());
@@ -33,10 +41,10 @@ public class CreateBillServlet extends HttpServlet {
                     mapper.getTypeFactory().constructCollectionType(List.class, BillItem.class));
 
             // Call service
-            boolean success = billService.createBill(customerAccountNumber, items);
+            int billId = billService.createBill(customerAccountNumber, items);
 
-            if (success) {
-                response.getWriter().write("{\"success\":true,\"message\":\"Bill created and stock updated\"}");
+            if (billId > 0) {
+                response.getWriter().write("{\"success\":true,\"message\":\"Bill created and stock updated\",\"billId\":" + billId + "}");
             } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().write("{\"success\":false,\"message\":\"Insufficient stock or error occurred\"}");
