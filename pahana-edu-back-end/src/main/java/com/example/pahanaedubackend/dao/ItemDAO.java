@@ -71,7 +71,32 @@ public class ItemDAO {
         }
     }
 
+    public boolean isItemUsedInBills(int itemId) {
+        String sql = "SELECT COUNT(*) FROM bill_items WHERE item_id = ?";
+
+        try (Connection conn = DBUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, itemId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     public boolean deleteItem(int itemId) {
+        // First check if item is used in any bills
+        if (isItemUsedInBills(itemId)) {
+            return false; // Cannot delete item that is used in bills
+        }
+
         String sql = "DELETE FROM items WHERE id = ?";
 
         try (Connection conn = DBUtil.getInstance().getConnection();

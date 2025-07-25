@@ -4,11 +4,18 @@ import com.example.pahanaedubackend.model.Bill;
 import com.example.pahanaedubackend.model.BillItem;
 import com.example.pahanaedubackend.util.DBUtil;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BillDAO {
-    public boolean createBill(Bill bill, List<BillItem> billItems) {
+    public int createBill(Bill bill, List<BillItem> billItems) {
         String billSql = "INSERT INTO bills (bill_date, total_amount, customer_account_number) VALUES (?, ?, ?)";
         String billItemSql = "INSERT INTO bill_items (bill_id, item_id, quantity, unit_price) VALUES (?, ?, ?, ?)";
 
@@ -38,7 +45,7 @@ public class BillDAO {
                     }
 
                     conn.commit();
-                    return true;
+                    return billId;
                 }
             } catch (SQLException e) {
                 conn.rollback();
@@ -48,6 +55,64 @@ public class BillDAO {
             e.printStackTrace();
         }
 
-        return false;
+        return -1;
+    }
+
+    public Map<String, Object> getBillDetails(int billId) {
+        String billSql = "SELECT b.*, c.full_name, c.address, c.telephone " +
+                        "FROM bills b " +
+                        "LEFT JOIN customer c ON b.customer_account_number = c.account_number " +
+                        "WHERE b.id = ?";
+
+        String itemsSql = "SELECT bi.*, i.name as item_name " +
+                         "FROM bill_items bi " +
+                         "JOIN items i ON bi.item_id = i.id " +
+                         "WHERE bi.bill_id = ?";
+
+        try (Connection conn = DBUtil.getInstance().getConnection()) {
+            Map<String, Object> billDetails = new HashMap<>();
+
+            // Get bill information
+            try (PreparedStatement billStmt = conn.prepareStatement(billSql)) {
+                billStmt.setInt(1, billId);
+                ResultSet billRs = billStmt.executeQuery();
+
+                if (billRs.next()) {
+                    billDetails.put("id", billRs.getInt("id"));
+                    billDetails.put("billDate", billRs.getDate("bill_date"));
+                    billDetails.put("total", billRs.getDouble("total_amount"));
+                    billDetails.put("customerAccountNumber", billRs.getString("customer_account_number"));
+                    billDetails.put("customerName", billRs.getString("full_name"));
+                    billDetails.put("customerAddress", billRs.getString("address"));
+                    billDetails.put("customerTelephone", billRs.getString("telephone"));
+                } else {
+                    return null; // Bill not found
+                }
+            }
+
+            // Get bill items
+            List<Map<String, Object>> items = new ArrayList<>();
+            try (PreparedStatement itemsStmt = conn.prepareStatement(itemsSql)) {
+                itemsStmt.setInt(1, billId);
+                ResultSet itemsRs = itemsStmt.executeQuery();
+
+                while (itemsRs.next()) {
+                    Map<String, Object> item = new HashMap<>();
+                    item.put("itemId", itemsRs.getInt("item_id"));
+                    item.put("itemName", itemsRs.getString("item_name"));
+                    item.put("quantity", itemsRs.getInt("quantity"));
+                    item.put("unitPrice", itemsRs.getDouble("unit_price"));
+                    item.put("total", itemsRs.getInt("quantity") * itemsRs.getDouble("unit_price"));
+                    items.add(item);
+                }
+            }
+
+            billDetails.put("items", items);
+            return billDetails;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
