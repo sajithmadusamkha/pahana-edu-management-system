@@ -7,16 +7,16 @@ import com.example.pahanaedubackend.model.BillItem;
 import com.example.pahanaedubackend.model.Item;
 import com.example.pahanaedubackend.util.DBUtil;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class BillService {
     private final BillDAO billDAO = new BillDAO();
     private final ItemDAO itemDAO = new ItemDAO();
 
-    public boolean createBill(String customerAccountNumber, List<BillItem> billItems) {
+    public int createBill(String customerAccountNumber, List<BillItem> billItems) {
         double total = 0.0;
         List<BillItem> validItems = new ArrayList<>();
 
@@ -32,7 +32,7 @@ public class BillService {
                 // update item stock
                 itemDAO.updateStock(item.getId(), item.getQuantity() - billItem.getQuantity());
             } else {
-                return false; // insufficient stock or invalid item
+                return -1; // insufficient stock or invalid item
             }
         }
 
@@ -42,5 +42,9 @@ public class BillService {
         bill.setCustomerAccountNumber(customerAccountNumber);
 
         return billDAO.createBill(bill, validItems);
+    }
+
+    public Map<String, Object> getBillDetails(int billId) {
+        return billDAO.getBillDetails(billId);
     }
 }

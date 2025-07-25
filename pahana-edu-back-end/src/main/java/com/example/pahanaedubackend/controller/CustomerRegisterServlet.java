@@ -35,14 +35,25 @@ public class CustomerRegisterServlet extends HttpServlet {
         }
 
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> data = mapper.readValue(request.getInputStream(), Map.class);
+        Map<String, Object> data = mapper.readValue(request.getInputStream(), Map.class);
 
         Customer customer = new Customer();
-        customer.setAccountNumber(data.get("accountNumber"));
-        customer.setFullName(data.get("fullName"));
-        customer.setTelephone(data.get("telephone"));
-        customer.setAddress(data.get("address"));
-        customer.setUnitsConsumed(Integer.parseInt(data.get("unitsConsumed")));
+        customer.setAccountNumber((String) data.get("accountNumber"));
+        customer.setFullName((String) data.get("fullName"));
+        customer.setTelephone((String) data.get("telephone"));
+        customer.setAddress((String) data.get("address"));
+
+        // Handle unitsConsumed which can be either Integer or String
+        Object unitsConsumedObj = data.get("unitsConsumed");
+        int unitsConsumed;
+        if (unitsConsumedObj instanceof Integer) {
+            unitsConsumed = (Integer) unitsConsumedObj;
+        } else if (unitsConsumedObj instanceof String) {
+            unitsConsumed = Integer.parseInt((String) unitsConsumedObj);
+        } else {
+            throw new IllegalArgumentException("Invalid unitsConsumed value: " + unitsConsumedObj);
+        }
+        customer.setUnitsConsumed(unitsConsumed);
 
         boolean success = customerService.registerCustomer(customer);
 
