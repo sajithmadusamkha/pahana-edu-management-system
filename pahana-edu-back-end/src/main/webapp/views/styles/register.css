@@ -1,0 +1,37 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+.register-card {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+}
+.brand-title {
+    font-weight: 700;
+    color: #0d6efd;
+}
+.form-floating {
+    margin-bottom: 1rem;
+}
+.login-link {
+    color: #0d6efd;
+    text-decoration: none;
+}
+.login-link:hover {
+    text-decoration: underline;
+}
+.show-password {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}

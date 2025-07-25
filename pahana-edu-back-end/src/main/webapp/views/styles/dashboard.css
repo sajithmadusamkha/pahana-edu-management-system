@@ -1,0 +1,256 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+    overflow-x: hidden; /* Prevent horizontal scroll issues */
+}
+.sidebar {
+    min-height: 100vh;
+    background-color: #ffffff;
+    border-right: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    width: 250px; /* Fixed width for sidebar */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+.sidebar .nav-link {
+    color: #495057;
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+}
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    background-color: #e9ecef;
+    color: #0d6efd;
+}
+.content {
+    margin-left: 250px; /* Match sidebar width */
+    padding: 1.5rem;
+    min-height: 100vh;
+    transition: all 0.3s ease;
+}
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    .content {
+        margin-left: 0; /* No margin when sidebar is hidden */
+    }
+}
+.stat-card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.chart-placeholder {
+    height: 300px;
+    background-color: #e9ecef;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Manage Customers Section */
+.manage-customers {
+    display: none; /* Hidden by default */
+    background: linear-gradient(145deg, #ffffff, #f8f9fa); /* Subtle gradient */
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.3s ease-in; /* Smooth fade-in */
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.manage-customers h2 {
+    color: #0d6efd;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+.manage-customers .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.manage-customers .form-floating {
+    position: relative;
+}
+.manage-customers .form-floating i {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.manage-customers .form-control:valid:not(:placeholder-shown) {
+    border-color: #28a745; /* Green for valid */
+}
+.manage-customers .form-control:invalid:not(:placeholder-shown) {
+    border-color: #dc3545; /* Red for invalid */
+}
+.manage-customers .form-floating textarea {
+    height: 100px;
+}
+.manage-customers .btn-primary {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.2s;
+}
+.manage-customers .btn-primary:hover {
+    transform: translateY(-2px);
+}
+.manage-customers .spinner-border {
+    display: none;
+    margin-right: 0.5rem;
+}
+.manage-customers .table-responsive {
+    margin-top: 2rem;
+}
+.manage-customers .table {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+.manage-customers .table th {
+    cursor: pointer;
+    user-select: none;
+    color: #0d6efd;
+    transition: background-color 0.3s;
+}
+.manage-customers .table th:hover {
+    background-color: #e9ecef;
+}
+.manage-customers .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+.manage-customers .btn-outline-primary, .manage-customers .btn-outline-danger {
+    transition: background-color 0.3s, color 0.3s;
+}
+.manage-customers .btn-outline-primary:hover i, .manage-customers .btn-outline-danger:hover i {
+    color: #fff;
+}
+
+/* Manage Items Section - Same styles as Manage Customers for consistency */
+.manage-items {
+    display: none; /* Hidden by default */
+    background: linear-gradient(145deg, #ffffff, #f8f9fa); /* Subtle gradient */
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.3s ease-in; /* Smooth fade-in */
+}
+.manage-items h2 {
+    color: #0d6efd;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+.manage-items .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.manage-items .form-floating {
+    position: relative;
+}
+.manage-items .form-floating i {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+.manage-items .form-control:valid:not(:placeholder-shown) {
+    border-color: #28a745; /* Green for valid */
+}
+.manage-items .form-control:invalid:not(:placeholder-shown) {
+    border-color: #dc3545; /* Red for invalid */
+}
+.manage-items .form-floating textarea {
+    height: 100px;
+}
+.manage-items .btn-primary {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.2s;
+}
+.manage-items .btn-primary:hover {
+    transform: translateY(-2px);
+}
+.manage-items .spinner-border {
+    display: none;
+    margin-right: 0.5rem;
+}
+.manage-items .table-responsive {
+    margin-top: 2rem;
+}
+.manage-items .table {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+.manage-items .table th {
+    cursor: pointer;
+    user-select: none;
+    color: #0d6efd;
+    transition: background-color 0.3s;
+}
+.manage-items .table th:hover {
+    background-color: #e9ecef;
+}
+.manage-items .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+.manage-items .btn-outline-primary, .manage-items .btn-outline-danger {
+    transition: background-color 0.3s, color 0.3s;
+}
+.manage-items .btn-outline-primary:hover i, .manage-items .btn-outline-danger:hover i {
+    color: #fff;
+}
+
+/* Place Order Section - Same styles for consistency */
+.place-order {
+    display: none; /* Hidden by default */
+    background: linear-gradient(145deg, #ffffff, #f8f9fa); /* Subtle gradient */
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.3s ease-in; /* Smooth fade-in */
+}
+.place-order h2 {
+    color: #0d6efd;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Help Section - Same styles for consistency */
+.help-section {
+    display: none; /* Hidden by default */
+    background: linear-gradient(145deg, #ffffff, #f8f9fa); /* Subtle gradient */
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.3s ease-in; /* Smooth fade-in */
+}
+.help-section h2 {
+    color: #0d6efd;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+}
