@@ -29,9 +29,9 @@
                 <i class="bi bi-cart me-2"></i> Items
             </a>
         </li>
-        <li class="nav-item" data-nav="settings">
+        <li class="nav-item" data-nav="place-order">
             <a class="nav-link" href="#">
-                <i class="bi bi-gear me-2"></i> Settings
+                <i class="bi bi-gear me-2"></i> Place Order
             </a>
         </li>
         <li class="nav-item" data-nav="view-account">
@@ -91,9 +91,9 @@
                         <i class="bi bi-cart me-2"></i> Items
                     </a>
                 </li>
-                <li class="nav-item" data-nav="settings">
+                <li class="nav-item" data-nav="place-order">
                     <a class="nav-link" href="#">
-                        <i class="bi bi-gear me-2"></i> Settings
+                        <i class="bi bi-gear me-2"></i> Place Order
                     </a>
                 </li>
                 <li class="nav-item" data-nav="view-account">
@@ -203,7 +203,7 @@
                 </tbody>
             </table>
         </div>
-        <!-- Update Modal -->
+        <!-- Update Customer Modal -->
         <div class="modal fade" id="updateCustomerModal" tabindex="-1" aria-labelledby="updateCustomerModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -243,6 +243,85 @@
             </div>
         </div>
     </div>
+
+    <!-- Manage Items Section -->
+    <div class="manage-items" style="display: none;">
+        <h2>Manage Items</h2>
+        <form id="itemForm">
+            <div class="form-grid">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="itemName" placeholder="Item Name" aria-label="Item Name" required pattern="[A-Za-z0-9\s]{2,}">
+                    <label for="itemName">Item Name</label>
+                </div>
+                <div class="form-floating">
+                    <input type="number" class="form-control" id="itemPrice" placeholder="Price" aria-label="Price" required min="0" step="0.01">
+                    <label for="itemPrice">Price ($)</label>
+                </div>
+                <div class="form-floating">
+                    <input type="number" class="form-control" id="itemQuantity" placeholder="Quantity" aria-label="Quantity" required min="0">
+                    <label for="itemQuantity">Quantity</label>
+                </div>
+            </div>
+            <button class="btn btn-primary" type="button" id="btnAddItem">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                Add Item
+            </button>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th data-sort="id">ID <i class="bi bi-arrow-down-up"></i></th>
+                    <th data-sort="name">Name <i class="bi bi-arrow-down-up"></i></th>
+                    <th data-sort="price">Price <i class="bi bi-arrow-down-up"></i></th>
+                    <th data-sort="quantity">Quantity <i class="bi bi-arrow-down-up"></i></th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="itemTableBody">
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No items added yet.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Update Item Modal -->
+        <div class="modal fade" id="updateItemModal" tabindex="-1" aria-labelledby="updateItemModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateItemModalLabel">Update Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="updateItemForm">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="updateItemId" placeholder="Item ID" readonly>
+                                <label for="updateItemId">Item ID (Read-only)</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="updateItemName" placeholder="Item Name" required pattern="[A-Za-z0-9\s]{2,}">
+                                <label for="updateItemName">Item Name</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="updateItemPrice" placeholder="Price" required min="0" step="0.01">
+                                <label for="updateItemPrice">Price ($)</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="updateItemQuantity" placeholder="Quantity" required min="0">
+                                <label for="updateItemQuantity">Quantity</label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="saveUpdateItem">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <!-- Bootstrap 5 JS and Popper -->

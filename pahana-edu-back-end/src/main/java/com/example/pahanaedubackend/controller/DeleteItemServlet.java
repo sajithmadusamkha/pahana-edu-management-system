@@ -37,6 +37,13 @@ public class DeleteItemServlet extends HttpServlet {
             return;
         }
 
+        // Check if item is used in bills before attempting deletion
+        if (itemService.isItemUsedInBills(itemId)) {
+            response.setStatus(HttpServletResponse.SC_CONFLICT);
+            response.getWriter().write("{\"success\":false,\"message\":\"Cannot delete item: This item is used in existing bills. Please remove it from all bills before deletion.\"}");
+            return;
+        }
+
         boolean deleted = itemService.deleteItem(itemId);
 
         if (deleted) {

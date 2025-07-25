@@ -34,6 +34,7 @@ $(document).ready(function () {
         $('.content .card.mb-4').hide();
         $('.content .card').last().hide();
         $('.content .manage-customers').hide();
+        $('.content .manage-items').hide();
 
         // Show content based on clicked item
         const navItem = $(this).parent().data('nav');
@@ -42,6 +43,10 @@ $(document).ready(function () {
             $('.content .manage-customers').show();
             localStorage.setItem('activeNav', 'customers'); // Persist view
             loadAllCustomers(); // Load all customers when navigating to customers page
+        } else if (navItem === 'items') {
+            $('.content .manage-items').show();
+            localStorage.setItem('activeNav', 'items'); // Persist view
+            loadAllItems(); // Load all items when navigating to items page
         } else if (navItem === 'home') {
             $('.content .row.g-4.mb-4').show();
             $('.content .card.mb-4').show();
@@ -85,6 +90,40 @@ $(document).ready(function () {
         });
     }
 
+    // Function to load all items
+    function loadAllItems() {
+        $.ajax({
+            url: 'http://localhost:8080/pahana/items',
+            type: 'GET',
+            success: function (items) {
+                $('#itemTableBody').empty();
+                if (items.length === 0) {
+                    $('#itemTableBody').append('<tr><td colspan="5" class="text-center text-muted">No items found.</td></tr>');
+                } else {
+                    items.forEach(function (item) {
+                        $('#itemTableBody').append(`
+                            <tr>
+                                <td>${item.id}</td>
+                                <td>${item.name}</td>
+                                <td>$${item.price.toFixed(2)}</td>
+                                <td>${item.quantity}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1 update-item-btn" data-id="${item.id}" data-bs-toggle="tooltip" title="Update Item"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger delete-item-btn" data-id="${item.id}" data-bs-toggle="tooltip" title="Delete Item"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                }
+                $('[data-bs-toggle="tooltip"]').tooltip(); // Re-initialize tooltips
+            },
+            error: function (xhr, status, error) {
+                console.error('Error loading items:', error);
+                $('#itemTableBody').empty().append('<tr><td colspan="5" class="text-center text-danger">Error loading items.</td></tr>');
+            }
+        });
+    }
+
     // Check if this is a fresh login (clear navigation state on fresh login)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('fresh') === 'true') {
@@ -100,12 +139,21 @@ $(document).ready(function () {
         $('.content .card.mb-4').hide();
         $('.content .card').last().hide();
         $('.content .manage-customers').show();
+        $('.content .manage-items').hide();
         loadAllCustomers(); // Load customers when showing customers page
+    } else if (activeNav === 'items') {
+        $('.content .row.g-4.mb-4').hide();
+        $('.content .card.mb-4').hide();
+        $('.content .card').last().hide();
+        $('.content .manage-customers').hide();
+        $('.content .manage-items').show();
+        loadAllItems(); // Load items when showing items page
     } else {
         $('.content .row.g-4.mb-4').show();
         $('.content .card.mb-4').show();
         $('.content .card').last().show();
         $('.content .manage-customers').hide();
+        $('.content .manage-items').hide();
     }
 
     // Form submission with AJAX
@@ -173,6 +221,91 @@ $(document).ready(function () {
         });
     });
 
+    // Add Item functionality
+    $('#btnAddItem').click(function (e) {
+        e.preventDefault(); // Prevent page refresh
+        const $button = $(this);
+        const $spinner = $button.find('.spinner-border');
+        $spinner.show();
+        $button.prop('disabled', true);
+
+        const itemData = {
+            name: $('#itemName').val().trim(),
+            price: parseFloat($('#itemPrice').val()),
+            quantity: parseInt($('#itemQuantity').val())
+        };
+
+        // Validate form fields
+        if (!itemData.name || !itemData.price || !itemData.quantity) {
+            alert('Please fill in all required fields.');
+            $spinner.hide();
+            $button.prop('disabled', false);
+            return;
+        }
+
+        if (itemData.price <= 0) {
+            alert('Price must be greater than 0.');
+            $spinner.hide();
+            $button.prop('disabled', false);
+            return;
+        }
+
+        if (itemData.quantity < 0) {
+            alert('Quantity cannot be negative.');
+            $spinner.hide();
+            $button.prop('disabled', false);
+            return;
+        }
+
+        $.ajax({
+            url: 'http://localhost:8080/pahana/create-item',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(itemData),
+            success: function (response) {
+                $spinner.hide();
+                $button.prop('disabled', false);
+                $('#itemForm')[0].reset();
+
+                // Load all items to refresh the table
+                loadAllItems();
+
+                // Show success toast
+                $('.content').prepend(`
+                    <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                Item "${itemData.name}" added successfully!
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `);
+                const toastElement = $('.content .toast');
+                const toast = new bootstrap.Toast(toastElement[0], { delay: 2000 });
+                toast.show();
+            },
+            error: function (xhr, status, error) {
+                $spinner.hide();
+                $button.prop('disabled', false);
+                $('.content').prepend(`
+                    <div class="toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                Failed to add item: ${xhr.responseJSON?.message || 'Server error'}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `);
+                const toastElement = $('.content .toast');
+                const toast = new bootstrap.Toast(toastElement[0], { delay: 2000 });
+                toast.show();
+                console.error('AJAX error:', status, error);
+            }
+        });
+    });
+
     // Table sorting
     $('.manage-customers th[data-sort]').click(function () {
         const key = $(this).data('sort');
@@ -189,7 +322,7 @@ $(document).ready(function () {
         $tbody.empty().append(rows);
     });
 
-    // Function to clear update modal
+    // Function to clear update customer modal
     function clearUpdateModal() {
         $('#updateAccountNumber').val('');
         $('#updateName').val('');
@@ -202,9 +335,24 @@ $(document).ready(function () {
         $('#customerTableBody tr').removeClass('table-warning');
     }
 
-    // Clear modal when it's hidden
+    // Function to clear update item modal
+    function clearUpdateItemModal() {
+        $('#updateItemId').val('');
+        $('#updateItemName').val('');
+        $('#updateItemPrice').val('');
+        $('#updateItemQuantity').val('');
+        $('#saveUpdateItem').removeData('item-id');
+        // Remove highlight from any previously selected row
+        $('#itemTableBody tr').removeClass('table-warning');
+    }
+
+    // Clear modals when they're hidden
     $('#updateCustomerModal').on('hidden.bs.modal', function () {
         clearUpdateModal();
+    });
+
+    $('#updateItemModal').on('hidden.bs.modal', function () {
+        clearUpdateItemModal();
     });
 
     // Update button click - Patch data from table row to modal
@@ -248,6 +396,41 @@ $(document).ready(function () {
 
         // Show the modal with patched data
         $('#updateCustomerModal').modal('show');
+    });
+
+    // Update Item button click - Patch data from table row to modal
+    $(document).on('click', '.update-item-btn', function () {
+        const $row = $(this).closest('tr');
+        const itemId = $(this).data('id');
+
+        // Get item data from the specific table row
+        const id = $row.find('td:nth-child(1)').text().trim();
+        const name = $row.find('td:nth-child(2)').text().trim();
+        const price = $row.find('td:nth-child(3)').text().trim().replace('$', '');
+        const quantity = $row.find('td:nth-child(4)').text().trim();
+
+        console.log('Patching item data to modal:', {
+            itemId, id, name, price, quantity
+        });
+
+        // Clear modal first to ensure clean state
+        clearUpdateItemModal();
+
+        // Highlight the selected row to show which item is being updated
+        $('#itemTableBody tr').removeClass('table-warning');
+        $row.addClass('table-warning');
+
+        // Populate the modal with current item data from the selected row
+        $('#updateItemId').val(id);
+        $('#updateItemName').val(name);
+        $('#updateItemPrice').val(price);
+        $('#updateItemQuantity').val(quantity);
+
+        // Store the item ID for the update operation
+        $('#saveUpdateItem').data('item-id', itemId);
+
+        // Show the modal with patched data
+        $('#updateItemModal').modal('show');
     });
 
     // Save update - Update customer with patched data
@@ -360,6 +543,107 @@ $(document).ready(function () {
         });
     });
 
+    // Save update item - Update item with patched data
+    $('#saveUpdateItem').click(function () {
+        const $button = $(this);
+        const itemId = $button.data('item-id');
+
+        // Check if we have the required data from the patched row
+        if (!itemId) {
+            alert('Error: Item data not properly loaded. Please try clicking the update button again.');
+            return;
+        }
+
+        // Get updated data from the modal form (patched and potentially modified by user)
+        const id = parseInt($('#updateItemId').val());
+        const name = $('#updateItemName').val().trim();
+        const price = parseFloat($('#updateItemPrice').val());
+        const quantity = parseInt($('#updateItemQuantity').val());
+
+        console.log('Saving updated item data:', {
+            itemId, id, name, price, quantity
+        });
+
+        // Validate form fields
+        if (!name || !price || !quantity) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        if (price <= 0) {
+            alert('Price must be greater than 0.');
+            return;
+        }
+
+        if (quantity < 0) {
+            alert('Quantity cannot be negative.');
+            return;
+        }
+
+        // Get updated data from the modal form
+        const updatedItem = {
+            id: id,
+            name: name,
+            price: price,
+            quantity: quantity
+        };
+
+        // Disable button and show loading state
+        $button.prop('disabled', true);
+        const originalText = $button.text();
+        $button.text('Updating...');
+
+        $.ajax({
+            url: 'http://localhost:8080/pahana/items-update',
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(updatedItem),
+            success: function (response) {
+                $button.prop('disabled', false);
+                $button.text(originalText);
+                $('#updateItemModal').modal('hide');
+
+                // Show success toast with item details
+                $('.content').prepend(`
+                    <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                Item "${name}" updated successfully!
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `);
+                const toastElement = $('.content .toast');
+                const toast = new bootstrap.Toast(toastElement[0], { delay: 2000 });
+                toast.show();
+
+                // Reload all items to refresh the table with updated data
+                loadAllItems();
+            },
+            error: function (xhr, status, error) {
+                $button.prop('disabled', false);
+                $button.text(originalText);
+
+                // Show error toast
+                $('.content').prepend(`
+                    <div class="toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                Failed to update item: ${xhr.responseJSON?.message || 'Server error'}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `);
+                const toastElement = $('.content .toast');
+                const toast = new bootstrap.Toast(toastElement[0], { delay: 2000 });
+                toast.show();
+                console.error('Update error:', status, error);
+            }
+        });
+    });
+
     // Delete button click
     $(document).on('click', '.delete-btn', function () {
         if (confirm('Are you sure you want to delete this customer?')) {
@@ -404,6 +688,67 @@ $(document).ready(function () {
                     `);
                     const toastElement = $('.content .toast');
                     const toast = new bootstrap.Toast(toastElement[0], { delay: 2000 });
+                    toast.show();
+                    console.error('Delete error:', status, error);
+                }
+            });
+        }
+    });
+
+    // Delete Item button click
+    $(document).on('click', '.delete-item-btn', function () {
+        const $row = $(this).closest('tr');
+        const itemId = $(this).data('id');
+        const itemName = $row.find('td:nth-child(2)').text(); // Get item name from second column
+
+        if (confirm(`Are you sure you want to delete "${itemName}"?\n\nNote: Items that are used in bills cannot be deleted.`)) {
+            $.ajax({
+                url: 'http://localhost:8080/pahana/item-delete?id=' + itemId,
+                type: 'DELETE',
+                success: function (response) {
+                    // Show success toast
+                    $('.content').prepend(`
+                        <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    Item "${itemName}" deleted successfully!
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    `);
+                    const toastElement = $('.content .toast');
+                    const toast = new bootstrap.Toast(toastElement[0], { delay: 2000 });
+                    toast.show();
+
+                    // Reload all items to refresh the table
+                    loadAllItems();
+                },
+                error: function (xhr, status, error) {
+                    let errorMessage = 'Server error';
+                    let toastClass = 'text-bg-danger';
+
+                    // Handle specific error cases
+                    if (xhr.status === 409) { // Conflict - item used in bills
+                        errorMessage = xhr.responseJSON?.message || 'Cannot delete item: This item is used in existing bills.';
+                        toastClass = 'text-bg-warning';
+                    } else if (xhr.responseJSON?.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+
+                    // Show error toast with appropriate styling
+                    $('.content').prepend(`
+                        <div class="toast align-items-center ${toastClass} border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    ${errorMessage}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    `);
+                    const toastElement = $('.content .toast');
+                    const toast = new bootstrap.Toast(toastElement[0], { delay: 4000 }); // Longer delay for error messages
                     toast.show();
                     console.error('Delete error:', status, error);
                 }
