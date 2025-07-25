@@ -20,6 +20,10 @@ public class ItemService {
         return itemDAO.updateItem(item);
     }
 
+    public boolean isItemUsedInBills(int itemId) {
+        return itemDAO.isItemUsedInBills(itemId);
+    }
+
     public boolean deleteItem(int itemId) {
         return itemDAO.deleteItem(itemId);
     }
