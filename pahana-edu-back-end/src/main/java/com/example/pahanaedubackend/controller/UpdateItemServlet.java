@@ -2,6 +2,7 @@ package com.example.pahanaedubackend.controller;
 
 import com.example.pahanaedubackend.model.Item;
 import com.example.pahanaedubackend.service.ItemService;
+import com.example.pahanaedubackend.util.ValidationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -32,6 +33,27 @@ public class UpdateItemServlet extends HttpServlet {
 
         ObjectMapper mapper = new ObjectMapper();
         Item item = mapper.readValue(request.getReader(), Item.class);
+
+        // Simple validation
+        // Validate item ID
+        if (item.getId() <= 0) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"success\":false,\"message\":\"Valid item ID is required\"}");
+            return;
+        }
+
+        // Validate using utility
+        ValidationUtil.ValidationResult validation = ValidationUtil.validateItem(
+            item.getName(), item.getPrice(), item.getQuantity());
+
+        if (!validation.isValid()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"success\":false,\"message\":\"" + validation.getFirstError() + "\"}");
+            return;
+        }
+
+        // Trim and format data
+        item.setName(item.getName().trim());
 
         boolean updated = itemService.updateItem(item);
 

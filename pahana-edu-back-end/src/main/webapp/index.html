@@ -94,9 +94,43 @@
         // Form submission
         $("#btnSignIn").click(function (e) {
             e.preventDefault();
+
+            // Simple validation
+            const username = $("#userName").val().trim();
+            const password = $("#floatingPassword").val();
+
+            // Clear previous error messages
+            $('.form-control').removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+            $("#message").empty();
+
+            let hasErrors = false;
+
+            // Validate username
+            if (!username) {
+                showFieldError('#userName', 'Username is required');
+                hasErrors = true;
+            } else if (username.length < 3) {
+                showFieldError('#userName', 'Username must be at least 3 characters long');
+                hasErrors = true;
+            }
+
+            // Validate password
+            if (!password) {
+                showFieldError('#floatingPassword', 'Password is required');
+                hasErrors = true;
+            } else if (password.length < 6) {
+                showFieldError('#floatingPassword', 'Password must be at least 6 characters long');
+                hasErrors = true;
+            }
+
+            if (hasErrors) {
+                return;
+            }
+
             const loginData = {
-                username: $("#userName").val(),
-                password: $("#floatingPassword").val()
+                username: username,
+                password: password
             };
             $.ajax({
                 type: "POST",
@@ -129,6 +163,13 @@
                 }
             });
         });
+
+        // Helper function to show field validation errors
+        function showFieldError(fieldSelector, message) {
+            const $field = $(fieldSelector);
+            $field.addClass('is-invalid');
+            $field.after('<div class="invalid-feedback">' + message + '</div>');
+        }
     });
 </script>
 </body>

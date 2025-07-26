@@ -40,8 +40,58 @@ public class CreateBillServlet extends HttpServlet {
             List<BillItem> items = mapper.convertValue(jsonNode.get("items"),
                     mapper.getTypeFactory().constructCollectionType(List.class, BillItem.class));
 
+            // Simple validation
+            // Validate customer account number
+            if (customerAccountNumber == null || customerAccountNumber.trim().isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"success\":false,\"message\":\"Customer account number is required\"}");
+                return;
+            }
+
+            if (customerAccountNumber.trim().length() < 6 || customerAccountNumber.trim().length() > 12) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"success\":false,\"message\":\"Customer account number must be between 6 and 12 characters\"}");
+                return;
+            }
+
+            // Validate items list
+            if (items == null || items.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"success\":false,\"message\":\"At least one item is required for the bill\"}");
+                return;
+            }
+
+            if (items.size() > 50) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"success\":false,\"message\":\"Cannot add more than 50 items to a single bill\"}");
+                return;
+            }
+
+            // Validate each bill item
+            for (int i = 0; i < items.size(); i++) {
+                BillItem item = items.get(i);
+
+                if (item.getItemId() <= 0) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"success\":false,\"message\":\"Invalid item ID at position " + (i + 1) + "\"}");
+                    return;
+                }
+
+                if (item.getQuantity() <= 0) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"success\":false,\"message\":\"Item quantity must be greater than 0 at position " + (i + 1) + "\"}");
+                    return;
+                }
+
+                if (item.getQuantity() > 1000) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"success\":false,\"message\":\"Item quantity cannot exceed 1,000 at position " + (i + 1) + "\"}");
+                    return;
+                }
+            }
+
             // Call service
-            int billId = billService.createBill(customerAccountNumber, items);
+            int billId = billService.createBill(customerAccountNumber.trim().toUpperCase(), items);
 
             if (billId > 0) {
                 response.getWriter().write("{\"success\":true,\"message\":\"Bill created and stock updated\",\"billId\":" + billId + "}");

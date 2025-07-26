@@ -2,6 +2,7 @@ package com.example.pahanaedubackend.controller;
 
 import com.example.pahanaedubackend.model.Customer;
 import com.example.pahanaedubackend.service.CustomerService;
+import com.example.pahanaedubackend.util.ValidationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -35,9 +36,36 @@ public class UpdateCustomerServlet extends HttpServlet {
         ObjectMapper mapper = new ObjectMapper();
         Customer customer = mapper.readValue(request.getInputStream(), Customer.class);
 
-        boolean success = customerService.updateCustomer(customer);
-
+        // Simple validation
         Map<String, Object> result = new HashMap<>();
+
+        // Validate customer ID
+        if (customer.getId() <= 0) {
+            result.put("success", false);
+            result.put("message", "Valid customer ID is required");
+            mapper.writeValue(response.getWriter(), result);
+            return;
+        }
+
+        // Validate using utility
+        ValidationUtil.ValidationResult validation = ValidationUtil.validateCustomer(
+            customer.getAccountNumber(), customer.getFullName(),
+            customer.getTelephone(), customer.getAddress(), customer.getUnitsConsumed());
+
+        if (!validation.isValid()) {
+            result.put("success", false);
+            result.put("message", validation.getFirstError());
+            mapper.writeValue(response.getWriter(), result);
+            return;
+        }
+
+        // Trim and format data
+        customer.setAccountNumber(customer.getAccountNumber().trim().toUpperCase());
+        customer.setFullName(customer.getFullName().trim());
+        customer.setTelephone(customer.getTelephone().trim());
+        customer.setAddress(customer.getAddress().trim());
+
+        boolean success = customerService.updateCustomer(customer);
         result.put("success", success);
         result.put("message", success ? "Customer updated successfully" : "Customer update failed");
         mapper.writeValue(response.getWriter(), result);

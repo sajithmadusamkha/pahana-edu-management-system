@@ -2,6 +2,7 @@ package com.example.pahanaedubackend.controller;
 
 import com.example.pahanaedubackend.model.Admin;
 import com.example.pahanaedubackend.service.AdminService;
+import com.example.pahanaedubackend.util.ValidationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -31,9 +32,18 @@ public class LoginServlet extends HttpServlet {
         String username = data.get("username");
         String password = data.get("password");
 
-        Admin admin = adminService.login(username, password);
-
+        // Simple validation using utility
+        ValidationUtil.ValidationResult validation = ValidationUtil.validateLogin(username, password);
         Map<String, Object> result = new HashMap<>();
+
+        if (!validation.isValid()) {
+            result.put("success", false);
+            result.put("message", validation.getFirstError());
+            mapper.writeValue(response.getWriter(), result);
+            return;
+        }
+
+        Admin admin = adminService.login(username.trim(), password);
         if (admin != null) {
             HttpSession session = request.getSession(true);
             session.setAttribute("admin", admin);
