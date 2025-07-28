@@ -1,7 +1,11 @@
 package com.example.pahanaedubackend.controller;
 
+import com.example.pahanaedubackend.factory.ResponseFactory;
+import com.example.pahanaedubackend.factory.ServiceFactory;
+import com.example.pahanaedubackend.factory.ValidationFactory;
 import com.example.pahanaedubackend.model.Customer;
 import com.example.pahanaedubackend.service.CustomerService;
+import com.example.pahanaedubackend.util.ValidationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -16,7 +20,16 @@ import java.util.Map;
 
 @WebServlet("/update-customer")
 public class UpdateCustomerServlet extends HttpServlet {
-    private final CustomerService customerService = new CustomerService();
+    private final CustomerService customerService;
+    private final ResponseFactory responseFactory;
+    private final ValidationFactory validationFactory;
+
+    // Constructor using Factory Pattern
+    public UpdateCustomerServlet() {
+        this.customerService = ServiceFactory.getInstance().getCustomerService();
+        this.responseFactory = ResponseFactory.getInstance();
+        this.validationFactory = ValidationFactory.getInstance();
+    }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
@@ -28,18 +41,46 @@ public class UpdateCustomerServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("admin") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"success\":false,\"message\":\"Unauthorized: Admin login required\"}");
+            Map<String, Object> errorResponse = responseFactory.createUnauthorizedResponse();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getWriter(), errorResponse);
             return;
         }
 
         ObjectMapper mapper = new ObjectMapper();
         Customer customer = mapper.readValue(request.getInputStream(), Customer.class);
 
-        boolean success = customerService.updateCustomer(customer);
+        // Validate customer ID
+        if (customer.getId() <= 0) {
+            Map<String, Object> errorResponse = responseFactory.createErrorResponse("Valid customer ID is required");
+            mapper.writeValue(response.getWriter(), errorResponse);
+            return;
+        }
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("success", success);
-        result.put("message", success ? "Customer updated successfully" : "Customer update failed");
+        // Validation using factory
+        ValidationUtil.ValidationResult validation = validationFactory.validateCustomer(
+            customer.getAccountNumber(), customer.getFullName(),
+            customer.getTelephone(), customer.getAddress(), customer.getUnitsConsumed());
+
+        if (!validation.isValid()) {
+            Map<String, Object> errorResponse = responseFactory.createValidationErrorResponse(
+                validation.getFirstError(), validation.getErrors());
+            mapper.writeValue(response.getWriter(), errorResponse);
+            return;
+        }
+
+        // Trim and format data
+        customer.setAccountNumber(customer.getAccountNumber().trim().toUpperCase());
+        customer.setFullName(customer.getFullName().trim());
+        customer.setTelephone(customer.getTelephone().trim());
+        customer.setAddress(customer.getAddress().trim());
+
+        boolean success = customerService.updateCustomer(customer);
+        Map<String, Object> result = responseFactory.createResponse(
+            success,
+            "Customer updated successfully",
+            "Customer update failed"
+        );
         mapper.writeValue(response.getWriter(), result);
     }
 }
