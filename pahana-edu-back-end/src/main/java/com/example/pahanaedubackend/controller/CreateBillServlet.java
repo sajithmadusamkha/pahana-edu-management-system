@@ -1,5 +1,7 @@
 package com.example.pahanaedubackend.controller;
 
+import com.example.pahanaedubackend.factory.ResponseFactory;
+import com.example.pahanaedubackend.factory.ServiceFactory;
 import com.example.pahanaedubackend.model.BillItem;
 import com.example.pahanaedubackend.service.BillService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -13,11 +15,19 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/bills-create")
 public class CreateBillServlet extends HttpServlet {
-    private final BillService billService = new BillService();
+    private final BillService billService;
+    private final ResponseFactory responseFactory;
     private final ObjectMapper mapper = new ObjectMapper();
+
+    // Constructor using Factory Pattern
+    public CreateBillServlet() {
+        this.billService = ServiceFactory.getInstance().getBillService();
+        this.responseFactory = ResponseFactory.getInstance();
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -29,7 +39,8 @@ public class CreateBillServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("admin") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"success\":false,\"message\":\"Unauthorized: Admin login required\"}");
+            Map<String, Object> errorResponse = responseFactory.createUnauthorizedResponse();
+            mapper.writeValue(response.getWriter(), errorResponse);
             return;
         }
 
@@ -40,30 +51,33 @@ public class CreateBillServlet extends HttpServlet {
             List<BillItem> items = mapper.convertValue(jsonNode.get("items"),
                     mapper.getTypeFactory().constructCollectionType(List.class, BillItem.class));
 
-            // Simple validation
             // Validate customer account number
             if (customerAccountNumber == null || customerAccountNumber.trim().isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"success\":false,\"message\":\"Customer account number is required\"}");
+                Map<String, Object> errorResponse = responseFactory.createErrorResponse("Customer account number is required");
+                mapper.writeValue(response.getWriter(), errorResponse);
                 return;
             }
 
             if (customerAccountNumber.trim().length() < 6 || customerAccountNumber.trim().length() > 12) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"success\":false,\"message\":\"Customer account number must be between 6 and 12 characters\"}");
+                Map<String, Object> errorResponse = responseFactory.createErrorResponse("Customer account number must be between 6 and 12 characters");
+                mapper.writeValue(response.getWriter(), errorResponse);
                 return;
             }
 
             // Validate items list
             if (items == null || items.isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"success\":false,\"message\":\"At least one item is required for the bill\"}");
+                Map<String, Object> errorResponse = responseFactory.createErrorResponse("At least one item is required for the bill");
+                mapper.writeValue(response.getWriter(), errorResponse);
                 return;
             }
 
             if (items.size() > 50) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"success\":false,\"message\":\"Cannot add more than 50 items to a single bill\"}");
+                Map<String, Object> errorResponse = responseFactory.createErrorResponse("Cannot add more than 50 items to a single bill");
+                mapper.writeValue(response.getWriter(), errorResponse);
                 return;
             }
 
@@ -73,19 +87,22 @@ public class CreateBillServlet extends HttpServlet {
 
                 if (item.getItemId() <= 0) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().write("{\"success\":false,\"message\":\"Invalid item ID at position " + (i + 1) + "\"}");
+                    Map<String, Object> errorResponse = responseFactory.createErrorResponse("Invalid item ID at position " + (i + 1));
+                    mapper.writeValue(response.getWriter(), errorResponse);
                     return;
                 }
 
                 if (item.getQuantity() <= 0) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().write("{\"success\":false,\"message\":\"Item quantity must be greater than 0 at position " + (i + 1) + "\"}");
+                    Map<String, Object> errorResponse = responseFactory.createErrorResponse("Item quantity must be greater than 0 at position " + (i + 1));
+                    mapper.writeValue(response.getWriter(), errorResponse);
                     return;
                 }
 
                 if (item.getQuantity() > 1000) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().write("{\"success\":false,\"message\":\"Item quantity cannot exceed 1,000 at position " + (i + 1) + "\"}");
+                    Map<String, Object> errorResponse = responseFactory.createErrorResponse("Item quantity cannot exceed 1,000 at position " + (i + 1));
+                    mapper.writeValue(response.getWriter(), errorResponse);
                     return;
                 }
             }
@@ -94,16 +111,20 @@ public class CreateBillServlet extends HttpServlet {
             int billId = billService.createBill(customerAccountNumber.trim().toUpperCase(), items);
 
             if (billId > 0) {
-                response.getWriter().write("{\"success\":true,\"message\":\"Bill created and stock updated\",\"billId\":" + billId + "}");
+                Map<String, Object> successResponse = responseFactory.createSuccessResponse("Bill created and stock updated");
+                successResponse.put("billId", billId);
+                mapper.writeValue(response.getWriter(), successResponse);
             } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"success\":false,\"message\":\"Insufficient stock or error occurred\"}");
+                Map<String, Object> errorResponse = responseFactory.createErrorResponse("Insufficient stock or error occurred");
+                mapper.writeValue(response.getWriter(), errorResponse);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"success\":false,\"message\":\"Server error\"}");
+            Map<String, Object> errorResponse = responseFactory.createErrorResponse("Server error");
+            mapper.writeValue(response.getWriter(), errorResponse);
         }
     }
 }

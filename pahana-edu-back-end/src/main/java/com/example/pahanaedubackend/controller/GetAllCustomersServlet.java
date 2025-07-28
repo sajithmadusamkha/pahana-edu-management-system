@@ -1,5 +1,7 @@
 package com.example.pahanaedubackend.controller;
 
+import com.example.pahanaedubackend.factory.ResponseFactory;
+import com.example.pahanaedubackend.factory.ServiceFactory;
 import com.example.pahanaedubackend.model.Customer;
 import com.example.pahanaedubackend.service.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,10 +14,18 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/customers")
 public class GetAllCustomersServlet extends HttpServlet {
-    private final CustomerService customerService = new CustomerService();
+    private final CustomerService customerService;
+    private final ResponseFactory responseFactory;
+
+    // Constructor using Factory Pattern
+    public GetAllCustomersServlet() {
+        this.customerService = ServiceFactory.getInstance().getCustomerService();
+        this.responseFactory = ResponseFactory.getInstance();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -27,7 +37,9 @@ public class GetAllCustomersServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("admin") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"success\":false,\"message\":\"Unauthorized: Admin login required\"}");
+            Map<String, Object> errorResponse = responseFactory.createUnauthorizedResponse();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getWriter(), errorResponse);
             return;
         }
 
