@@ -1,7 +1,11 @@
 package com.example.pahanaedubackend.controller;
 
+import com.example.pahanaedubackend.factory.ResponseFactory;
+import com.example.pahanaedubackend.factory.ServiceFactory;
+import com.example.pahanaedubackend.factory.ValidationFactory;
 import com.example.pahanaedubackend.model.Admin;
 import com.example.pahanaedubackend.service.AdminService;
+import com.example.pahanaedubackend.util.ValidationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -16,7 +20,16 @@ import java.util.Map;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-    private final AdminService adminService = new AdminService();
+    private final AdminService adminService;
+    private final ResponseFactory responseFactory;
+    private final ValidationFactory validationFactory;
+
+    // Constructor using Factory Pattern
+    public LoginServlet() {
+        this.adminService = ServiceFactory.getInstance().getAdminService();
+        this.responseFactory = ResponseFactory.getInstance();
+        this.validationFactory = ValidationFactory.getInstance();
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -31,19 +44,27 @@ public class LoginServlet extends HttpServlet {
         String username = data.get("username");
         String password = data.get("password");
 
-        Admin admin = adminService.login(username, password);
+        // Validation using factory
+        ValidationUtil.ValidationResult validation = validationFactory.validateLogin(username, password);
 
-        Map<String, Object> result = new HashMap<>();
+        if (!validation.isValid()) {
+            Map<String, Object> errorResponse = responseFactory.createValidationErrorResponse(
+                validation.getFirstError(), validation.getErrors());
+            mapper.writeValue(response.getWriter(), errorResponse);
+            return;
+        }
+
+        Admin admin = adminService.login(username.trim(), password);
+        Map<String, Object> result;
+
         if (admin != null) {
             HttpSession session = request.getSession(true);
             session.setAttribute("admin", admin);
 
-            result.put("success", true);
-            result.put("message", "Login successful");
+            result = responseFactory.createSuccessResponse("Login successful");
             result.put("username", admin.getUsername());
         } else {
-            result.put("success", false);
-            result.put("message", "Invalid username or password");
+            result = responseFactory.createErrorResponse("Invalid username or password");
         }
 
         mapper.writeValue(response.getWriter(), result);
