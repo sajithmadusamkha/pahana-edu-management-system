@@ -3,6 +3,7 @@ package com.example.pahanaedubackend.controller;
 import com.example.pahanaedubackend.model.Customer;
 import com.example.pahanaedubackend.service.CustomerService;
 import com.example.pahanaedubackend.util.PasswordUtil;
+import com.example.pahanaedubackend.util.ValidationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -37,27 +38,54 @@ public class CustomerRegisterServlet extends HttpServlet {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> data = mapper.readValue(request.getInputStream(), Map.class);
 
+        String accountNumber = (String) data.get("accountNumber");
+        String fullName = (String) data.get("fullName");
+        String telephone = (String) data.get("telephone");
+        String address = (String) data.get("address");
+
         Customer customer = new Customer();
-        customer.setAccountNumber((String) data.get("accountNumber"));
-        customer.setFullName((String) data.get("fullName"));
-        customer.setTelephone((String) data.get("telephone"));
-        customer.setAddress((String) data.get("address"));
+        customer.setAccountNumber(accountNumber.trim().toUpperCase());
+        customer.setFullName(fullName.trim());
+        customer.setTelephone(telephone.trim());
+        customer.setAddress(address.trim());
 
         // Handle unitsConsumed which can be either Integer or String
         Object unitsConsumedObj = data.get("unitsConsumed");
         int unitsConsumed;
-        if (unitsConsumedObj instanceof Integer) {
-            unitsConsumed = (Integer) unitsConsumedObj;
-        } else if (unitsConsumedObj instanceof String) {
-            unitsConsumed = Integer.parseInt((String) unitsConsumedObj);
-        } else {
-            throw new IllegalArgumentException("Invalid unitsConsumed value: " + unitsConsumedObj);
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            if (unitsConsumedObj instanceof Integer) {
+                unitsConsumed = (Integer) unitsConsumedObj;
+            } else if (unitsConsumedObj instanceof String) {
+                unitsConsumed = Integer.parseInt((String) unitsConsumedObj);
+            } else {
+                result.put("success", false);
+                result.put("message", "Units consumed must be a valid number");
+                mapper.writeValue(response.getWriter(), result);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            result.put("success", false);
+            result.put("message", "Units consumed must be a valid number");
+            mapper.writeValue(response.getWriter(), result);
+            return;
         }
+
+        // Simple validation using utility
+        ValidationUtil.ValidationResult validation = ValidationUtil.validateCustomer(
+            accountNumber, fullName, telephone, address, unitsConsumed);
+
+        if (!validation.isValid()) {
+            result.put("success", false);
+            result.put("message", validation.getFirstError());
+            mapper.writeValue(response.getWriter(), result);
+            return;
+        }
+
         customer.setUnitsConsumed(unitsConsumed);
 
         boolean success = customerService.registerCustomer(customer);
-
-        Map<String, Object> result = new HashMap<>();
         result.put("success", success);
         result.put("message", success ? "Customer registered successfully" : "Customer registration failed");
 
