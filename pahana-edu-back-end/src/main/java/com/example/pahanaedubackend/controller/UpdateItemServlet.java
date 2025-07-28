@@ -1,7 +1,11 @@
 package com.example.pahanaedubackend.controller;
 
+import com.example.pahanaedubackend.factory.ResponseFactory;
+import com.example.pahanaedubackend.factory.ServiceFactory;
+import com.example.pahanaedubackend.factory.ValidationFactory;
 import com.example.pahanaedubackend.model.Item;
 import com.example.pahanaedubackend.service.ItemService;
+import com.example.pahanaedubackend.util.ValidationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -11,10 +15,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Map;
 
 @WebServlet("/items-update")
 public class UpdateItemServlet extends HttpServlet {
-    private final ItemService itemService = new ItemService();
+    private final ItemService itemService;
+    private final ResponseFactory responseFactory;
+    private final ValidationFactory validationFactory;
+
+    // Constructor using Factory Pattern
+    public UpdateItemServlet() {
+        this.itemService = ServiceFactory.getInstance().getItemService();
+        this.responseFactory = ResponseFactory.getInstance();
+        this.validationFactory = ValidationFactory.getInstance();
+    }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
@@ -26,20 +40,49 @@ public class UpdateItemServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("admin") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"success\":false,\"message\":\"Unauthorized: Admin login required\"}");
+            Map<String, Object> errorResponse = responseFactory.createUnauthorizedResponse();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getWriter(), errorResponse);
             return;
         }
 
         ObjectMapper mapper = new ObjectMapper();
         Item item = mapper.readValue(request.getReader(), Item.class);
 
-        boolean updated = itemService.updateItem(item);
-
-        if (updated) {
-            response.getWriter().write("{\"success\":true,\"message\":\"Item updated successfully\"}");
-        } else {
+        // Validate item ID
+        if (item.getId() <= 0) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"success\":false,\"message\":\"Failed to update item\"}");
+            Map<String, Object> errorResponse = responseFactory.createErrorResponse("Valid item ID is required");
+            mapper.writeValue(response.getWriter(), errorResponse);
+            return;
         }
+
+        // Validation using factory
+        ValidationUtil.ValidationResult validation = validationFactory.validateItem(
+            item.getName(), item.getPrice(), item.getQuantity());
+
+        if (!validation.isValid()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            Map<String, Object> errorResponse = responseFactory.createValidationErrorResponse(
+                validation.getFirstError(), validation.getErrors());
+            mapper.writeValue(response.getWriter(), errorResponse);
+            return;
+        }
+
+        // Trim and format data
+        item.setName(item.getName().trim());
+
+        boolean updated = itemService.updateItem(item);
+        Map<String, Object> result = responseFactory.createResponse(
+            updated,
+            "Item updated successfully",
+            "Failed to update item"
+        );
+
+        if (!updated) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+
+        mapper.writeValue(response.getWriter(), result);
     }
 }

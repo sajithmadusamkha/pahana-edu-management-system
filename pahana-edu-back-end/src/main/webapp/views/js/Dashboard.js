@@ -200,15 +200,84 @@ $(document).ready(function () {
         e.preventDefault(); // Prevent page refresh
         const $button = $(this);
         const $spinner = $button.find('.spinner-border');
+
+        // Simple validation
+        const accountNumber = $('#accountNumber').val().trim();
+        const fullName = $('#name').val().trim();
+        const address = $('#address').val().trim();
+        const telephone = $('#telephone').val().trim();
+        const unitsConsumed = $('#unitsConsumed').val().trim();
+
+        // Clear previous error messages
+        $('.form-control').removeClass('is-invalid');
+        $('.invalid-feedback').remove();
+
+        let hasErrors = false;
+
+        // Validate account number
+        if (!accountNumber) {
+            showFieldError('#accountNumber', 'Account number is required');
+            hasErrors = true;
+        } else if (accountNumber.length < 6 || accountNumber.length > 12) {
+            showFieldError('#accountNumber', 'Account number must be between 6 and 12 characters');
+            hasErrors = true;
+        } else if (!/^[A-Za-z0-9]+$/.test(accountNumber)) {
+            showFieldError('#accountNumber', 'Account number must contain only letters and numbers');
+            hasErrors = true;
+        }
+
+        // Validate full name
+        if (!fullName) {
+            showFieldError('#name', 'Full name is required');
+            hasErrors = true;
+        } else if (fullName.length < 2 || fullName.length > 100) {
+            showFieldError('#name', 'Full name must be between 2 and 100 characters');
+            hasErrors = true;
+        }
+
+        // Validate telephone
+        if (!telephone) {
+            showFieldError('#telephone', 'Telephone number is required');
+            hasErrors = true;
+        } else if (!/^[0-9]{10}$/.test(telephone)) {
+            showFieldError('#telephone', 'Telephone number must be exactly 10 digits');
+            hasErrors = true;
+        }
+
+        // Validate address
+        if (!address) {
+            showFieldError('#address', 'Address is required');
+            hasErrors = true;
+        } else if (address.length < 10 || address.length > 255) {
+            showFieldError('#address', 'Address must be between 10 and 255 characters');
+            hasErrors = true;
+        }
+
+        // Validate units consumed
+        if (!unitsConsumed) {
+            showFieldError('#unitsConsumed', 'Units consumed is required');
+            hasErrors = true;
+        } else if (isNaN(unitsConsumed) || parseInt(unitsConsumed) < 0) {
+            showFieldError('#unitsConsumed', 'Units consumed must be a non-negative number');
+            hasErrors = true;
+        } else if (parseInt(unitsConsumed) > 10000) {
+            showFieldError('#unitsConsumed', 'Units consumed cannot exceed 10,000');
+            hasErrors = true;
+        }
+
+        if (hasErrors) {
+            return;
+        }
+
         $spinner.show();
         $button.prop('disabled', true);
 
         const customerData = {
-            accountNumber: $('#accountNumber').val(),
-            fullName: $('#name').val(),
-            address: $('#address').val(),
-            telephone: $('#telephone').val(),
-            unitsConsumed: parseInt($('#unitsConsumed').val())
+            accountNumber: accountNumber.toUpperCase(),
+            fullName: fullName,
+            address: address,
+            telephone: telephone,
+            unitsConsumed: parseInt(unitsConsumed)
         };
 
         $.ajax({
@@ -274,16 +343,46 @@ $(document).ready(function () {
             quantity: parseInt($('#itemQuantity').val())
         };
 
-        // Validate form fields
-        if (!itemData.name || !itemData.price || !itemData.quantity) {
-            alert('Please fill in all required fields.');
-            $spinner.hide();
-            $button.prop('disabled', false);
-            return;
+        // Clear previous error messages
+        $('.form-control').removeClass('is-invalid');
+        $('.invalid-feedback').remove();
+
+        let hasErrors = false;
+
+        // Validate item name
+        if (!itemData.name) {
+            showFieldError('#itemName', 'Item name is required');
+            hasErrors = true;
+        } else if (itemData.name.length < 2 || itemData.name.length > 100) {
+            showFieldError('#itemName', 'Item name must be between 2 and 100 characters');
+            hasErrors = true;
         }
 
-        if (itemData.price <= 0) {
-            alert('Price must be greater than 0.');
+        // Validate price
+        if (!itemData.price) {
+            showFieldError('#itemPrice', 'Price is required');
+            hasErrors = true;
+        } else if (isNaN(itemData.price) || itemData.price <= 0) {
+            showFieldError('#itemPrice', 'Price must be a number greater than 0');
+            hasErrors = true;
+        } else if (itemData.price > 999999.99) {
+            showFieldError('#itemPrice', 'Price cannot exceed 999,999.99');
+            hasErrors = true;
+        }
+
+        // Validate quantity
+        if (!itemData.quantity) {
+            showFieldError('#itemQuantity', 'Quantity is required');
+            hasErrors = true;
+        } else if (isNaN(itemData.quantity) || itemData.quantity < 0) {
+            showFieldError('#itemQuantity', 'Quantity must be a non-negative number');
+            hasErrors = true;
+        } else if (itemData.quantity > 10000) {
+            showFieldError('#itemQuantity', 'Quantity cannot exceed 10,000');
+            hasErrors = true;
+        }
+
+        if (hasErrors) {
             $spinner.hide();
             $button.prop('disabled', false);
             return;
@@ -500,14 +599,61 @@ $(document).ready(function () {
             unitsConsumed
         });
 
-        // Validate form fields
-        if (!fullName || !address || !telephone || !unitsConsumed) {
-            alert('Please fill in all required fields.');
-            return;
+        // Clear previous error messages
+        $('.form-control').removeClass('is-invalid');
+        $('.invalid-feedback').remove();
+
+        let hasErrors = false;
+
+        // Validate account number
+        if (!accountNumber) {
+            showFieldError('#updateAccountNumber', 'Account number is required');
+            hasErrors = true;
+        } else if (accountNumber.length < 6 || accountNumber.length > 12) {
+            showFieldError('#updateAccountNumber', 'Account number must be between 6 and 12 characters');
+            hasErrors = true;
         }
 
-        if (!/^[0-9]{10}$/.test(telephone)) {
-            alert('Please enter a valid 10-digit telephone number.');
+        // Validate full name
+        if (!fullName) {
+            showFieldError('#updateName', 'Full name is required');
+            hasErrors = true;
+        } else if (fullName.length < 2 || fullName.length > 100) {
+            showFieldError('#updateName', 'Full name must be between 2 and 100 characters');
+            hasErrors = true;
+        }
+
+        // Validate telephone
+        if (!telephone) {
+            showFieldError('#updateTelephone', 'Telephone number is required');
+            hasErrors = true;
+        } else if (!/^[0-9]{10}$/.test(telephone)) {
+            showFieldError('#updateTelephone', 'Telephone number must be exactly 10 digits');
+            hasErrors = true;
+        }
+
+        // Validate address
+        if (!address) {
+            showFieldError('#updateAddress', 'Address is required');
+            hasErrors = true;
+        } else if (address.length < 10 || address.length > 255) {
+            showFieldError('#updateAddress', 'Address must be between 10 and 255 characters');
+            hasErrors = true;
+        }
+
+        // Validate units consumed
+        if (!unitsConsumed) {
+            showFieldError('#updateUnitsConsumed', 'Units consumed is required');
+            hasErrors = true;
+        } else if (isNaN(unitsConsumed) || parseInt(unitsConsumed) < 0) {
+            showFieldError('#updateUnitsConsumed', 'Units consumed must be a non-negative number');
+            hasErrors = true;
+        } else if (parseInt(unitsConsumed) > 10000) {
+            showFieldError('#updateUnitsConsumed', 'Units consumed cannot exceed 10,000');
+            hasErrors = true;
+        }
+
+        if (hasErrors) {
             return;
         }
 
@@ -603,19 +749,46 @@ $(document).ready(function () {
             itemId, id, name, price, quantity
         });
 
-        // Validate form fields
-        if (!name || !price || !quantity) {
-            alert('Please fill in all required fields.');
-            return;
+        // Clear previous error messages
+        $('.form-control').removeClass('is-invalid');
+        $('.invalid-feedback').remove();
+
+        let hasErrors = false;
+
+        // Validate item name
+        if (!name) {
+            showFieldError('#updateItemName', 'Item name is required');
+            hasErrors = true;
+        } else if (name.length < 2 || name.length > 100) {
+            showFieldError('#updateItemName', 'Item name must be between 2 and 100 characters');
+            hasErrors = true;
         }
 
-        if (price <= 0) {
-            alert('Price must be greater than 0.');
-            return;
+        // Validate price
+        if (!price) {
+            showFieldError('#updateItemPrice', 'Price is required');
+            hasErrors = true;
+        } else if (isNaN(price) || price <= 0) {
+            showFieldError('#updateItemPrice', 'Price must be a number greater than 0');
+            hasErrors = true;
+        } else if (price > 999999.99) {
+            showFieldError('#updateItemPrice', 'Price cannot exceed 999,999.99');
+            hasErrors = true;
         }
 
-        if (quantity < 0) {
-            alert('Quantity cannot be negative.');
+        // Validate quantity
+        if (!quantity) {
+            showFieldError('#updateItemQuantity', 'Quantity is required');
+            hasErrors = true;
+        } else if (isNaN(quantity) || quantity < 0) {
+            showFieldError('#updateItemQuantity', 'Quantity must be a non-negative number');
+            hasErrors = true;
+        } else if (quantity > 10000) {
+            showFieldError('#updateItemQuantity', 'Quantity cannot exceed 10,000');
+            hasErrors = true;
+        }
+
+        if (hasErrors) {
             return;
         }
 
@@ -1270,4 +1443,11 @@ $(document).ready(function () {
         localStorage.removeItem('activeNav'); // Clear active view
         window.location.href = 'index.html'; // Fixed path
     });
+
+    // Helper function to show field validation errors
+    function showFieldError(fieldSelector, message) {
+        const $field = $(fieldSelector);
+        $field.addClass('is-invalid');
+        $field.after('<div class="invalid-feedback">' + message + '</div>');
+    }
 });

@@ -1,5 +1,7 @@
 package com.example.pahanaedubackend.controller;
 
+import com.example.pahanaedubackend.factory.ResponseFactory;
+import com.example.pahanaedubackend.factory.ServiceFactory;
 import com.example.pahanaedubackend.model.Admin;
 import com.example.pahanaedubackend.service.AdminService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +17,14 @@ import java.util.Map;
 
 @WebServlet("/register-admin")
 public class AdminRegisterServlet  extends HttpServlet {
-    private final AdminService adminService = new AdminService();
+    private final AdminService adminService;
+    private final ResponseFactory responseFactory;
+
+    // Constructor using Factory Pattern
+    public AdminRegisterServlet() {
+        this.adminService = ServiceFactory.getInstance().getAdminService();
+        this.responseFactory = ResponseFactory.getInstance();
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -35,9 +44,11 @@ public class AdminRegisterServlet  extends HttpServlet {
         String password = data.get("password");
         boolean success = adminService.registerAdmin(admin, password);
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("success", success);
-        result.put("message", success ? "Admin registered successfully" : "Registration failed");
+        Map<String, Object> result = responseFactory.createResponse(
+            success,
+            "Admin registered successfully",
+            "Registration failed"
+        );
 
         mapper.writeValue(response.getWriter(), result);
     }
