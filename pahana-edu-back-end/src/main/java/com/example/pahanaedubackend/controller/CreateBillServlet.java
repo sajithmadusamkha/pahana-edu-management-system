@@ -1,10 +1,9 @@
 package com.example.pahanaedubackend.controller;
 
-import com.example.pahanaedubackend.factory.ResponseFactory;
-import com.example.pahanaedubackend.factory.ServiceFactory;
+import com.example.pahanaedubackend.factory.impl.FactoryProvider;
+import com.example.pahanaedubackend.factory.IResponseFactory;
 import com.example.pahanaedubackend.model.BillItem;
 import com.example.pahanaedubackend.service.BillService;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -20,13 +19,14 @@ import java.util.Map;
 @WebServlet("/bills-create")
 public class CreateBillServlet extends HttpServlet {
     private final BillService billService;
-    private final ResponseFactory responseFactory;
+    private final IResponseFactory responseFactory;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    // Constructor using Factory Pattern
+    // Constructor using Standard Factory Pattern with Interfaces
     public CreateBillServlet() {
-        this.billService = ServiceFactory.getInstance().getBillService();
-        this.responseFactory = ResponseFactory.getInstance();
+        FactoryProvider provider = FactoryProvider.getInstance();
+        this.billService = provider.getServiceFactory().getBillService();
+        this.responseFactory = provider.getResponseFactory();
     }
 
     @Override

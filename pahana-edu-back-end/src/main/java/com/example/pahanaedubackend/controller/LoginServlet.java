@@ -1,8 +1,8 @@
 package com.example.pahanaedubackend.controller;
 
-import com.example.pahanaedubackend.factory.ResponseFactory;
-import com.example.pahanaedubackend.factory.ServiceFactory;
-import com.example.pahanaedubackend.factory.ValidationFactory;
+import com.example.pahanaedubackend.factory.impl.FactoryProvider;
+import com.example.pahanaedubackend.factory.IResponseFactory;
+import com.example.pahanaedubackend.factory.IValidationFactory;
 import com.example.pahanaedubackend.model.Admin;
 import com.example.pahanaedubackend.service.AdminService;
 import com.example.pahanaedubackend.util.ValidationUtil;
@@ -15,20 +15,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     private final AdminService adminService;
-    private final ResponseFactory responseFactory;
-    private final ValidationFactory validationFactory;
+    private final IResponseFactory responseFactory;
+    private final IValidationFactory validationFactory;
 
-    // Constructor using Factory Pattern
+    // Constructor using Standard Factory Pattern with Interfaces
     public LoginServlet() {
-        this.adminService = ServiceFactory.getInstance().getAdminService();
-        this.responseFactory = ResponseFactory.getInstance();
-        this.validationFactory = ValidationFactory.getInstance();
+        FactoryProvider provider = FactoryProvider.getInstance();
+        this.adminService = provider.getServiceFactory().getAdminService();
+        this.responseFactory = provider.getResponseFactory();
+        this.validationFactory = provider.getValidationFactory();
     }
 
     @Override

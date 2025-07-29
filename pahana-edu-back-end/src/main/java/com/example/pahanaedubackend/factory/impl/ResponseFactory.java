@@ -1,4 +1,6 @@
-package com.example.pahanaedubackend.factory;
+package com.example.pahanaedubackend.factory.impl;
+
+import com.example.pahanaedubackend.factory.IResponseFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.Map;
  * Factory class for creating standardized response objects using the Factory Design Pattern.
  * This class implements the Singleton pattern and provides consistent response formatting
  * across the entire application.
- * 
+ *
  * Benefits:
  * - Standardized response format
  * - Consistent error handling
@@ -16,7 +18,7 @@ import java.util.Map;
  * - Reduces code duplication in controllers
  * - Centralized response creation logic
  */
-public class ResponseFactory {
+public class ResponseFactory implements IResponseFactory {
     
     // Singleton instance
     private static ResponseFactory instance;

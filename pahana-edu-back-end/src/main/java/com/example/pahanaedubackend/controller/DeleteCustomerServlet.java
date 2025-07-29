@@ -1,5 +1,7 @@
 package com.example.pahanaedubackend.controller;
 
+import com.example.pahanaedubackend.factory.impl.FactoryProvider;
+import com.example.pahanaedubackend.factory.IResponseFactory;
 import com.example.pahanaedubackend.service.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -15,7 +17,15 @@ import java.util.Map;
 
 @WebServlet("/delete-customer")
 public class DeleteCustomerServlet extends HttpServlet {
-    private final CustomerService customerService = new CustomerService();
+    private final CustomerService customerService;
+    private final IResponseFactory responseFactory;
+
+    // Constructor using Standard Factory Pattern with Interfaces
+    public DeleteCustomerServlet() {
+        FactoryProvider provider = FactoryProvider.getInstance();
+        this.customerService = provider.getServiceFactory().getCustomerService();
+        this.responseFactory = provider.getResponseFactory();
+    }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)

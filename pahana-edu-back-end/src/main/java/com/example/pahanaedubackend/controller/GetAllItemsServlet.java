@@ -1,7 +1,7 @@
 package com.example.pahanaedubackend.controller;
 
-import com.example.pahanaedubackend.factory.ResponseFactory;
-import com.example.pahanaedubackend.factory.ServiceFactory;
+import com.example.pahanaedubackend.factory.impl.FactoryProvider;
+import com.example.pahanaedubackend.factory.IResponseFactory;
 import com.example.pahanaedubackend.model.Item;
 import com.example.pahanaedubackend.service.ItemService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,12 +19,13 @@ import java.util.Map;
 @WebServlet("/items")
 public class GetAllItemsServlet extends HttpServlet {
     private final ItemService itemService;
-    private final ResponseFactory responseFactory;
+    private final IResponseFactory responseFactory;
 
-    // Constructor using Factory Pattern
+    // Constructor using Standard Factory Pattern with Interfaces
     public GetAllItemsServlet() {
-        this.itemService = ServiceFactory.getInstance().getItemService();
-        this.responseFactory = ResponseFactory.getInstance();
+        FactoryProvider provider = FactoryProvider.getInstance();
+        this.itemService = provider.getServiceFactory().getItemService();
+        this.responseFactory = provider.getResponseFactory();
     }
 
     @Override

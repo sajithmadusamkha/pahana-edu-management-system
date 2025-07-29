@@ -1,8 +1,10 @@
 package com.example.pahanaedubackend.controller;
 
+import com.example.pahanaedubackend.factory.impl.FactoryProvider;
+import com.example.pahanaedubackend.factory.IResponseFactory;
+import com.example.pahanaedubackend.factory.IValidationFactory;
 import com.example.pahanaedubackend.model.Customer;
 import com.example.pahanaedubackend.service.CustomerService;
-import com.example.pahanaedubackend.util.PasswordUtil;
 import com.example.pahanaedubackend.util.ValidationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -13,12 +15,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 @WebServlet("/register-customer")
 public class CustomerRegisterServlet extends HttpServlet {
-    private final CustomerService customerService = new CustomerService();
+    private final CustomerService customerService;
+    private final IResponseFactory responseFactory;
+    private final IValidationFactory validationFactory;
+
+    // Constructor using Standard Factory Pattern with Interfaces
+    public CustomerRegisterServlet() {
+        FactoryProvider provider = FactoryProvider.getInstance();
+        this.customerService = provider.getServiceFactory().getCustomerService();
+        this.responseFactory = provider.getResponseFactory();
+        this.validationFactory = provider.getValidationFactory();
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -31,7 +42,9 @@ public class CustomerRegisterServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("admin") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"success\":false, \"message\":\"Unauthorized: Admin login required\"}");
+            Map<String, Object> errorResponse = responseFactory.createUnauthorizedResponse();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getWriter(), errorResponse);
             return;
         }
 
@@ -52,7 +65,6 @@ public class CustomerRegisterServlet extends HttpServlet {
         // Handle unitsConsumed which can be either Integer or String
         Object unitsConsumedObj = data.get("unitsConsumed");
         int unitsConsumed;
-        Map<String, Object> result = new HashMap<>();
 
         try {
             if (unitsConsumedObj instanceof Integer) {
@@ -60,34 +72,38 @@ public class CustomerRegisterServlet extends HttpServlet {
             } else if (unitsConsumedObj instanceof String) {
                 unitsConsumed = Integer.parseInt((String) unitsConsumedObj);
             } else {
-                result.put("success", false);
-                result.put("message", "Units consumed must be a valid number");
-                mapper.writeValue(response.getWriter(), result);
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                Map<String, Object> errorResponse = responseFactory.createErrorResponse("Units consumed must be a valid number");
+                mapper.writeValue(response.getWriter(), errorResponse);
                 return;
             }
         } catch (NumberFormatException e) {
-            result.put("success", false);
-            result.put("message", "Units consumed must be a valid number");
-            mapper.writeValue(response.getWriter(), result);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            Map<String, Object> errorResponse = responseFactory.createErrorResponse("Units consumed must be a valid number");
+            mapper.writeValue(response.getWriter(), errorResponse);
             return;
         }
 
-        // Simple validation using utility
-        ValidationUtil.ValidationResult validation = ValidationUtil.validateCustomer(
+        // Validation using factory
+        ValidationUtil.ValidationResult validation = validationFactory.validateCustomer(
             accountNumber, fullName, telephone, address, unitsConsumed);
 
         if (!validation.isValid()) {
-            result.put("success", false);
-            result.put("message", validation.getFirstError());
-            mapper.writeValue(response.getWriter(), result);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            Map<String, Object> errorResponse = responseFactory.createValidationErrorResponse(
+                validation.getFirstError(), validation.getErrors());
+            mapper.writeValue(response.getWriter(), errorResponse);
             return;
         }
 
         customer.setUnitsConsumed(unitsConsumed);
 
         boolean success = customerService.registerCustomer(customer);
-        result.put("success", success);
-        result.put("message", success ? "Customer registered successfully" : "Customer registration failed");
+        Map<String, Object> result = responseFactory.createResponse(
+            success,
+            "Customer registered successfully",
+            "Customer registration failed"
+        );
 
         mapper.writeValue(response.getWriter(), result);
     }

@@ -1,7 +1,7 @@
 package com.example.pahanaedubackend.controller;
 
-import com.example.pahanaedubackend.factory.ResponseFactory;
-import com.example.pahanaedubackend.factory.ServiceFactory;
+import com.example.pahanaedubackend.factory.impl.FactoryProvider;
+import com.example.pahanaedubackend.factory.IResponseFactory;
 import com.example.pahanaedubackend.model.Admin;
 import com.example.pahanaedubackend.service.AdminService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,18 +12,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 @WebServlet("/register-admin")
 public class AdminRegisterServlet  extends HttpServlet {
     private final AdminService adminService;
-    private final ResponseFactory responseFactory;
+    private final IResponseFactory responseFactory;
 
-    // Constructor using Factory Pattern
+    // Constructor using Standard Factory Pattern with Interfaces
     public AdminRegisterServlet() {
-        this.adminService = ServiceFactory.getInstance().getAdminService();
-        this.responseFactory = ResponseFactory.getInstance();
+        FactoryProvider provider = FactoryProvider.getInstance();
+        this.adminService = provider.getServiceFactory().getAdminService();
+        this.responseFactory = provider.getResponseFactory();
     }
 
     @Override

@@ -2,11 +2,9 @@ package com.example.pahanaedubackend.service;
 
 import com.example.pahanaedubackend.dao.BillDAO;
 import com.example.pahanaedubackend.dao.ItemDAO;
-import com.example.pahanaedubackend.factory.DAOFactory;
 import com.example.pahanaedubackend.model.Bill;
 import com.example.pahanaedubackend.model.BillItem;
 import com.example.pahanaedubackend.model.Item;
-import com.example.pahanaedubackend.util.DBUtil;
 
 import java.util.ArrayList;
 import java.util.Date;

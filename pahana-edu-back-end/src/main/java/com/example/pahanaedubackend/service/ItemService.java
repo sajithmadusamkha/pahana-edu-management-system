@@ -1,7 +1,7 @@
 package com.example.pahanaedubackend.service;
 
 import com.example.pahanaedubackend.dao.ItemDAO;
-import com.example.pahanaedubackend.factory.DAOFactory;
+import com.example.pahanaedubackend.factory.impl.DAOFactory;
 import com.example.pahanaedubackend.model.Item;
 
 import java.util.List;

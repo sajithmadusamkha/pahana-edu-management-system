@@ -1,8 +1,8 @@
 package com.example.pahanaedubackend.controller;
 
-import com.example.pahanaedubackend.factory.ResponseFactory;
-import com.example.pahanaedubackend.factory.ServiceFactory;
-import com.example.pahanaedubackend.factory.ValidationFactory;
+import com.example.pahanaedubackend.factory.impl.FactoryProvider;
+import com.example.pahanaedubackend.factory.IResponseFactory;
+import com.example.pahanaedubackend.factory.IValidationFactory;
 import com.example.pahanaedubackend.model.Item;
 import com.example.pahanaedubackend.service.ItemService;
 import com.example.pahanaedubackend.util.ValidationUtil;
@@ -20,14 +20,15 @@ import java.util.Map;
 @WebServlet("/items-update")
 public class UpdateItemServlet extends HttpServlet {
     private final ItemService itemService;
-    private final ResponseFactory responseFactory;
-    private final ValidationFactory validationFactory;
+    private final IResponseFactory responseFactory;
+    private final IValidationFactory validationFactory;
 
-    // Constructor using Factory Pattern
+    // Constructor using Standard Factory Pattern with Interfaces
     public UpdateItemServlet() {
-        this.itemService = ServiceFactory.getInstance().getItemService();
-        this.responseFactory = ResponseFactory.getInstance();
-        this.validationFactory = ValidationFactory.getInstance();
+        FactoryProvider provider = FactoryProvider.getInstance();
+        this.itemService = provider.getServiceFactory().getItemService();
+        this.responseFactory = provider.getResponseFactory();
+        this.validationFactory = provider.getValidationFactory();
     }
 
     @Override
