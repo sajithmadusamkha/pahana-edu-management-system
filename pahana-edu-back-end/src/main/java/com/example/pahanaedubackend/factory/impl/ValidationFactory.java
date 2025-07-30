@@ -1,12 +1,13 @@
-package com.example.pahanaedubackend.factory;
+package com.example.pahanaedubackend.factory.impl;
 
+import com.example.pahanaedubackend.factory.IValidationFactory;
 import com.example.pahanaedubackend.util.ValidationUtil;
 
 /**
  * Factory class for creating validation objects using the Factory Design Pattern.
  * This class implements the Singleton pattern and provides a unified interface
  * for validation operations across the application.
- * 
+ *
  * Benefits:
  * - Centralized validation logic
  * - Easy to extend with new validation types
@@ -14,7 +15,7 @@ import com.example.pahanaedubackend.util.ValidationUtil;
  * - Loose coupling between controllers and validation logic
  * - Easy to modify validation implementations
  */
-public class ValidationFactory {
+public class ValidationFactory implements IValidationFactory {
     
     // Singleton instance
     private static ValidationFactory instance;
@@ -54,24 +55,39 @@ public class ValidationFactory {
     public ValidationUtil.ValidationResult validate(String entityType, Object... params) {
         switch (entityType.toLowerCase()) {
             case "customer":
-                return validateCustomer(params);
+                return validateCustomerInternal(params);
             case "item":
-                return validateItem(params);
+                return validateItemInternal(params);
             case "login":
-                return validateLogin(params);
+                return validateLoginInternal(params);
             default:
                 throw new IllegalArgumentException("Unknown entity type: " + entityType);
         }
     }
     
     /**
-     * Validate customer data
+     * Direct customer validation method (public interface method)
+     *
+     * @param accountNumber Customer account number
+     * @param fullName Customer full name
+     * @param telephone Customer telephone
+     * @param address Customer address
+     * @param unitsConsumed Units consumed
+     * @return ValidationResult
+     */
+    public ValidationUtil.ValidationResult validateCustomer(String accountNumber, String fullName,
+                                                           String telephone, String address, int unitsConsumed) {
+        return ValidationUtil.validateCustomer(accountNumber, fullName, telephone, address, unitsConsumed);
+    }
+
+    /**
+     * Validate customer data (internal method)
      * Expected parameters: accountNumber, fullName, telephone, address, unitsConsumed
-     * 
+     *
      * @param params Customer validation parameters
      * @return ValidationResult
      */
-    private ValidationUtil.ValidationResult validateCustomer(Object... params) {
+    private ValidationUtil.ValidationResult validateCustomerInternal(Object... params) {
         if (params.length != 5) {
             throw new IllegalArgumentException("Customer validation requires 5 parameters: accountNumber, fullName, telephone, address, unitsConsumed");
         }
@@ -84,15 +100,38 @@ public class ValidationFactory {
         
         return ValidationUtil.validateCustomer(accountNumber, fullName, telephone, address, unitsConsumed);
     }
-    
+
     /**
-     * Validate item data
+     * Direct item validation method (public interface method)
+     *
+     * @param name Item name
+     * @param price Item price
+     * @param quantity Item quantity
+     * @return ValidationResult
+     */
+    public ValidationUtil.ValidationResult validateItem(String name, double price, int quantity) {
+        return ValidationUtil.validateItem(name, price, quantity);
+    }
+
+    /**
+     * Direct login validation method (public interface method)
+     *
+     * @param username Username
+     * @param password Password
+     * @return ValidationResult
+     */
+    public ValidationUtil.ValidationResult validateLogin(String username, String password) {
+        return ValidationUtil.validateLogin(username, password);
+    }
+
+    /**
+     * Validate item data (internal method)
      * Expected parameters: name, price, quantity
-     * 
+     *
      * @param params Item validation parameters
      * @return ValidationResult
      */
-    private ValidationUtil.ValidationResult validateItem(Object... params) {
+    private ValidationUtil.ValidationResult validateItemInternal(Object... params) {
         if (params.length != 3) {
             throw new IllegalArgumentException("Item validation requires 3 parameters: name, price, quantity");
         }
@@ -105,13 +144,13 @@ public class ValidationFactory {
     }
     
     /**
-     * Validate login credentials
+     * Validate login credentials (internal method)
      * Expected parameters: username, password
-     * 
+     *
      * @param params Login validation parameters
      * @return ValidationResult
      */
-    private ValidationUtil.ValidationResult validateLogin(Object... params) {
+    private ValidationUtil.ValidationResult validateLoginInternal(Object... params) {
         if (params.length != 2) {
             throw new IllegalArgumentException("Login validation requires 2 parameters: username, password");
         }
@@ -121,45 +160,7 @@ public class ValidationFactory {
         
         return ValidationUtil.validateLogin(username, password);
     }
-    
-    /**
-     * Direct customer validation method
-     * 
-     * @param accountNumber Customer account number
-     * @param fullName Customer full name
-     * @param telephone Customer telephone
-     * @param address Customer address
-     * @param unitsConsumed Units consumed
-     * @return ValidationResult
-     */
-    public ValidationUtil.ValidationResult validateCustomer(String accountNumber, String fullName, 
-                                                          String telephone, String address, int unitsConsumed) {
-        return ValidationUtil.validateCustomer(accountNumber, fullName, telephone, address, unitsConsumed);
-    }
-    
-    /**
-     * Direct item validation method
-     * 
-     * @param name Item name
-     * @param price Item price
-     * @param quantity Item quantity
-     * @return ValidationResult
-     */
-    public ValidationUtil.ValidationResult validateItem(String name, double price, int quantity) {
-        return ValidationUtil.validateItem(name, price, quantity);
-    }
-    
-    /**
-     * Direct login validation method
-     * 
-     * @param username Username
-     * @param password Password
-     * @return ValidationResult
-     */
-    public ValidationUtil.ValidationResult validateLogin(String username, String password) {
-        return ValidationUtil.validateLogin(username, password);
-    }
-    
+
     /**
      * Reset the factory instance (useful for testing)
      * This method should only be used in test environments

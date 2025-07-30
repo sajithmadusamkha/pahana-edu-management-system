@@ -1,51 +1,38 @@
 package com.example.pahanaedubackend.controller;
 
-import com.example.pahanaedubackend.factory.ResponseFactory;
-import com.example.pahanaedubackend.factory.ServiceFactory;
+import com.example.pahanaedubackend.facade.ControllerFacade;
 import com.example.pahanaedubackend.model.Item;
-import com.example.pahanaedubackend.service.ItemService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @WebServlet("/items")
 public class GetAllItemsServlet extends HttpServlet {
-    private final ItemService itemService;
-    private final ResponseFactory responseFactory;
+    private final ControllerFacade facade;
 
-    // Constructor using Factory Pattern
+    // Constructor using Facade Pattern for simplified access
     public GetAllItemsServlet() {
-        this.itemService = ServiceFactory.getInstance().getItemService();
-        this.responseFactory = ResponseFactory.getInstance();
+        this.facade = ControllerFacade.getInstance();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        // Initialize response and validate session using facade
+        facade.initializeJsonResponse(response);
 
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("admin") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            Map<String, Object> errorResponse = responseFactory.createUnauthorizedResponse();
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(response.getWriter(), errorResponse);
-            return;
+        if (!facade.validateAdminSession(request, response)) {
+            return; // Response already written by facade
         }
 
-        List<Item> items = itemService.getAllItems();
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getWriter(), items);
+        // Get items using facade service access and write response
+        List<Item> items = facade.getItemService().getAllItems();
+        facade.writeJsonResponse(response, items);
     }
 }

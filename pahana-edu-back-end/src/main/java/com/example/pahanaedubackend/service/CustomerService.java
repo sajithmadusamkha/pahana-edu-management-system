@@ -1,10 +1,8 @@
 package com.example.pahanaedubackend.service;
 
 import com.example.pahanaedubackend.dao.CustomerDAO;
-import com.example.pahanaedubackend.dao.UserDAO;
-import com.example.pahanaedubackend.factory.DAOFactory;
+import com.example.pahanaedubackend.factory.impl.DAOFactory;
 import com.example.pahanaedubackend.model.Customer;
-import com.example.pahanaedubackend.util.PasswordUtil;
 
 import java.util.List;
 

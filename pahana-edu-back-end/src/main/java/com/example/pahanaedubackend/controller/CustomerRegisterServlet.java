@@ -1,42 +1,39 @@
 package com.example.pahanaedubackend.controller;
 
+import com.example.pahanaedubackend.facade.ControllerFacade;
 import com.example.pahanaedubackend.model.Customer;
-import com.example.pahanaedubackend.service.CustomerService;
-import com.example.pahanaedubackend.util.PasswordUtil;
 import com.example.pahanaedubackend.util.ValidationUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 @WebServlet("/register-customer")
 public class CustomerRegisterServlet extends HttpServlet {
-    private final CustomerService customerService = new CustomerService();
+    private final ControllerFacade facade;
+
+    // Constructor using Facade Pattern for simplified access
+    public CustomerRegisterServlet() {
+        this.facade = ControllerFacade.getInstance();
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Initialize response and validate session using facade
+        facade.initializeJsonResponse(response);
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("admin") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"success\":false, \"message\":\"Unauthorized: Admin login required\"}");
-            return;
+        if (!facade.validateAdminSession(request, response)) {
+            return; // Response already written by facade
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> data = mapper.readValue(request.getInputStream(), Map.class);
+        // Parse request data using facade
+        Map<String, Object> data = facade.parseJsonRequest(request, Map.class);
 
         String accountNumber = (String) data.get("accountNumber");
         String fullName = (String) data.get("fullName");
@@ -52,7 +49,6 @@ public class CustomerRegisterServlet extends HttpServlet {
         // Handle unitsConsumed which can be either Integer or String
         Object unitsConsumedObj = data.get("unitsConsumed");
         int unitsConsumed;
-        Map<String, Object> result = new HashMap<>();
 
         try {
             if (unitsConsumedObj instanceof Integer) {
@@ -60,35 +56,33 @@ public class CustomerRegisterServlet extends HttpServlet {
             } else if (unitsConsumedObj instanceof String) {
                 unitsConsumed = Integer.parseInt((String) unitsConsumedObj);
             } else {
-                result.put("success", false);
-                result.put("message", "Units consumed must be a valid number");
-                mapper.writeValue(response.getWriter(), result);
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                facade.writeStandardResponse(response, false, null, "Units consumed must be a valid number");
                 return;
             }
         } catch (NumberFormatException e) {
-            result.put("success", false);
-            result.put("message", "Units consumed must be a valid number");
-            mapper.writeValue(response.getWriter(), result);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            facade.writeStandardResponse(response, false, null, "Units consumed must be a valid number");
             return;
         }
 
-        // Simple validation using utility
-        ValidationUtil.ValidationResult validation = ValidationUtil.validateCustomer(
+        // Validation using facade
+        ValidationUtil.ValidationResult validation = facade.validateCustomer(
             accountNumber, fullName, telephone, address, unitsConsumed);
 
         if (!validation.isValid()) {
-            result.put("success", false);
-            result.put("message", validation.getFirstError());
-            mapper.writeValue(response.getWriter(), result);
+            facade.handleValidationErrors(response, validation);
             return;
         }
 
         customer.setUnitsConsumed(unitsConsumed);
 
-        boolean success = customerService.registerCustomer(customer);
-        result.put("success", success);
-        result.put("message", success ? "Customer registered successfully" : "Customer registration failed");
+        // Register customer using facade service access
+        boolean success = facade.getCustomerService().registerCustomer(customer);
 
-        mapper.writeValue(response.getWriter(), result);
+        // Write response using facade
+        facade.writeStandardResponse(response, success,
+            "Customer registered successfully",
+            "Customer registration failed");
     }
 }
