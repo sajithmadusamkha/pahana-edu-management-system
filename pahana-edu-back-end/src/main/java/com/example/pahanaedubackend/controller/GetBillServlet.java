@@ -1,5 +1,7 @@
 package com.example.pahanaedubackend.controller;
 
+import com.example.pahanaedubackend.factory.impl.FactoryProvider;
+import com.example.pahanaedubackend.factory.IResponseFactory;
 import com.example.pahanaedubackend.service.BillService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -14,7 +16,15 @@ import java.util.Map;
 
 @WebServlet("/bill")
 public class GetBillServlet extends HttpServlet {
-    private final BillService billService = new BillService();
+    private final BillService billService;
+    private final IResponseFactory responseFactory;
+
+    // Constructor using Standard Factory Pattern with Interfaces
+    public GetBillServlet() {
+        FactoryProvider provider = FactoryProvider.getInstance();
+        this.billService = provider.getServiceFactory().getBillService();
+        this.responseFactory = provider.getResponseFactory();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

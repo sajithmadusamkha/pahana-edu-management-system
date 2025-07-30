@@ -1,5 +1,7 @@
 package com.example.pahanaedubackend.controller;
 
+import com.example.pahanaedubackend.factory.impl.FactoryProvider;
+import com.example.pahanaedubackend.factory.IResponseFactory;
 import com.example.pahanaedubackend.service.ItemService;
 
 import javax.servlet.ServletException;
@@ -12,7 +14,15 @@ import java.io.IOException;
 
 @WebServlet("/item-delete")
 public class DeleteItemServlet extends HttpServlet {
-    private final ItemService itemService = new ItemService();
+    private final ItemService itemService;
+    private final IResponseFactory responseFactory;
+
+    // Constructor using Standard Factory Pattern with Interfaces
+    public DeleteItemServlet() {
+        FactoryProvider provider = FactoryProvider.getInstance();
+        this.itemService = provider.getServiceFactory().getItemService();
+        this.responseFactory = provider.getResponseFactory();
+    }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)

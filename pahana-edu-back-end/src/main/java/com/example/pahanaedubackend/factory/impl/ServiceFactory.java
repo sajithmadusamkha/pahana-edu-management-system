@@ -1,5 +1,6 @@
-package com.example.pahanaedubackend.factory;
+package com.example.pahanaedubackend.factory.impl;
 
+import com.example.pahanaedubackend.factory.IServiceFactory;
 import com.example.pahanaedubackend.service.AdminService;
 import com.example.pahanaedubackend.service.BillService;
 import com.example.pahanaedubackend.service.CustomerService;
@@ -8,7 +9,7 @@ import com.example.pahanaedubackend.service.ItemService;
 /**
  * Factory class for creating Service instances using the Factory Design Pattern.
  * This class implements the Singleton pattern to ensure only one factory instance exists.
- * 
+ *
  * Benefits:
  * - Centralized service creation
  * - Easy to modify service implementations
@@ -16,7 +17,7 @@ import com.example.pahanaedubackend.service.ItemService;
  * - Consistent object creation across the application
  * - Easy to implement service caching or pooling if needed
  */
-public class ServiceFactory {
+public class ServiceFactory implements IServiceFactory {
     
     // Singleton instance
     private static ServiceFactory instance;
