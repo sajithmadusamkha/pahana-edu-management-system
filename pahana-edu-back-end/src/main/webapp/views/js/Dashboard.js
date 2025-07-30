@@ -1010,8 +1010,17 @@ $(document).ready(function () {
             }
         });
 
-        // For now, set orders to 0 (can be implemented later with actual order tracking)
-        $('#totalOrdersCard').text('0');
+        // Load total orders/bills count
+        $.ajax({
+            url: 'http://localhost:8080/pahana/total-bills',
+            type: 'GET',
+            success: function (response) {
+                $('#totalOrdersCard').text(response.totalBills);
+            },
+            error: function () {
+                $('#totalOrdersCard').text('0');
+            }
+        });
     }
 
     // Update counters when customers/items are loaded
@@ -1267,6 +1276,9 @@ $(document).ready(function () {
                     updateOrderSummary();
                     $('#customerSelect').val('');
                     $('#customerInfo').hide();
+
+                    // Refresh dashboard statistics to update total orders count
+                    loadDashboardStatistics();
 
                     // Show success message
                     showToast('success', 'Order placed successfully!');

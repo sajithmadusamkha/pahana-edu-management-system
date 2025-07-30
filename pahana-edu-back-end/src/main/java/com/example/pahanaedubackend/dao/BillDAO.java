@@ -115,4 +115,22 @@ public class BillDAO {
             return null;
         }
     }
+
+    public int getTotalBillsCount() {
+        String sql = "SELECT COUNT(*) FROM bills";
+
+        try (Connection conn = DBUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
 }

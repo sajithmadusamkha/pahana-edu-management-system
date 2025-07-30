@@ -46,4 +46,8 @@ public class BillService {
     public Map<String, Object> getBillDetails(int billId) {
         return billDAO.getBillDetails(billId);
     }
+
+    public int getTotalBillsCount() {
+        return billDAO.getTotalBillsCount();
+    }
 }
