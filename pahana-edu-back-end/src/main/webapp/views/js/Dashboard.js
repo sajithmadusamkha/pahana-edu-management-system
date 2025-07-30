@@ -1331,7 +1331,7 @@ $(document).ready(function () {
         const billHtml = `
             <div class="bill-header text-center mb-4">
                 <h3>PAHANA EDU MANAGEMENT</h3>
-                <p class="text-muted">Educational Institution Bill</p>
+                <p class="text-muted">Pahana EDU Invoice</p>
                 <hr>
             </div>
 

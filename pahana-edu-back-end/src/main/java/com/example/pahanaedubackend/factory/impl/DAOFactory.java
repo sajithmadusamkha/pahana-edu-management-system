@@ -1,10 +1,11 @@
-package com.example.pahanaedubackend.factory;
+package com.example.pahanaedubackend.factory.impl;
 
 import com.example.pahanaedubackend.dao.AdminDAO;
 import com.example.pahanaedubackend.dao.BillDAO;
 import com.example.pahanaedubackend.dao.CustomerDAO;
 import com.example.pahanaedubackend.dao.ItemDAO;
 import com.example.pahanaedubackend.dao.UserDAO;
+import com.example.pahanaedubackend.factory.IDAOFactory;
 
 /**
  * Factory class for creating DAO instances using the Factory Design Pattern.
@@ -16,7 +17,7 @@ import com.example.pahanaedubackend.dao.UserDAO;
  * - Loose coupling between services and DAOs
  * - Consistent object creation across the application
  */
-public class DAOFactory {
+public class DAOFactory implements IDAOFactory {
     
     // Singleton instance
     private static DAOFactory instance;
