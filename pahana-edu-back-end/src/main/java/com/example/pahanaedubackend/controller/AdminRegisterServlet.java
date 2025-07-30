@@ -1,10 +1,7 @@
 package com.example.pahanaedubackend.controller;
 
-import com.example.pahanaedubackend.factory.impl.FactoryProvider;
-import com.example.pahanaedubackend.factory.IResponseFactory;
+import com.example.pahanaedubackend.facade.ControllerFacade;
 import com.example.pahanaedubackend.model.Admin;
-import com.example.pahanaedubackend.service.AdminService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,26 +12,23 @@ import java.io.IOException;
 import java.util.Map;
 
 @WebServlet("/register-admin")
-public class AdminRegisterServlet  extends HttpServlet {
-    private final AdminService adminService;
-    private final IResponseFactory responseFactory;
+public class AdminRegisterServlet extends HttpServlet {
+    private final ControllerFacade facade;
 
-    // Constructor using Standard Factory Pattern with Interfaces
+    // Constructor using Facade Pattern for simplified access
     public AdminRegisterServlet() {
-        FactoryProvider provider = FactoryProvider.getInstance();
-        this.adminService = provider.getServiceFactory().getAdminService();
-        this.responseFactory = provider.getResponseFactory();
+        this.facade = ControllerFacade.getInstance();
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        // Initialize response using facade
+        facade.initializeJsonResponse(response);
 
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> data = mapper.readValue(request.getInputStream(), Map.class);
+        // Parse request data using facade
+        Map<String, String> data = facade.parseJsonRequest(request);
 
         Admin admin = new Admin();
         admin.setUsername(data.get("username"));
@@ -42,14 +36,13 @@ public class AdminRegisterServlet  extends HttpServlet {
         admin.setEmail(data.get("email"));
 
         String password = data.get("password");
-        boolean success = adminService.registerAdmin(admin, password);
 
-        Map<String, Object> result = responseFactory.createResponse(
-            success,
+        // Register admin using facade service access
+        boolean success = facade.getAdminService().registerAdmin(admin, password);
+
+        // Write response using facade
+        facade.writeStandardResponse(response, success,
             "Admin registered successfully",
-            "Registration failed"
-        );
-
-        mapper.writeValue(response.getWriter(), result);
+            "Registration failed");
     }
 }

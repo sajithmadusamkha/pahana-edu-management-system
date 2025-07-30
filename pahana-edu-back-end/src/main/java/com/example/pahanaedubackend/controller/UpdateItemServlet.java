@@ -1,89 +1,64 @@
 package com.example.pahanaedubackend.controller;
 
-import com.example.pahanaedubackend.factory.impl.FactoryProvider;
-import com.example.pahanaedubackend.factory.IResponseFactory;
-import com.example.pahanaedubackend.factory.IValidationFactory;
+import com.example.pahanaedubackend.facade.ControllerFacade;
 import com.example.pahanaedubackend.model.Item;
-import com.example.pahanaedubackend.service.ItemService;
 import com.example.pahanaedubackend.util.ValidationUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Map;
 
 @WebServlet("/items-update")
 public class UpdateItemServlet extends HttpServlet {
-    private final ItemService itemService;
-    private final IResponseFactory responseFactory;
-    private final IValidationFactory validationFactory;
+    private final ControllerFacade facade;
 
-    // Constructor using Standard Factory Pattern with Interfaces
+    // Constructor using Facade Pattern for simplified access
     public UpdateItemServlet() {
-        FactoryProvider provider = FactoryProvider.getInstance();
-        this.itemService = provider.getServiceFactory().getItemService();
-        this.responseFactory = provider.getResponseFactory();
-        this.validationFactory = provider.getValidationFactory();
+        this.facade = ControllerFacade.getInstance();
     }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        // Initialize response and validate session using facade
+        facade.initializeJsonResponse(response);
 
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("admin") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            Map<String, Object> errorResponse = responseFactory.createUnauthorizedResponse();
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(response.getWriter(), errorResponse);
-            return;
+        if (!facade.validateAdminSession(request, response)) {
+            return; // Response already written by facade
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        Item item = mapper.readValue(request.getReader(), Item.class);
+        // Parse request data using facade (using reader for PUT requests)
+        Item item = facade.parseJsonRequest(request, Item.class);
 
         // Validate item ID
         if (item.getId() <= 0) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            Map<String, Object> errorResponse = responseFactory.createErrorResponse("Valid item ID is required");
-            mapper.writeValue(response.getWriter(), errorResponse);
+            facade.writeStandardResponse(response, false, null, "Valid item ID is required");
             return;
         }
 
-        // Validation using factory
-        ValidationUtil.ValidationResult validation = validationFactory.validateItem(
+        // Validation using facade
+        ValidationUtil.ValidationResult validation = facade.validateItem(
             item.getName(), item.getPrice(), item.getQuantity());
 
         if (!validation.isValid()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            Map<String, Object> errorResponse = responseFactory.createValidationErrorResponse(
-                validation.getFirstError(), validation.getErrors());
-            mapper.writeValue(response.getWriter(), errorResponse);
+            facade.handleValidationErrors(response, validation);
             return;
         }
 
         // Trim and format data
         item.setName(item.getName().trim());
 
-        boolean updated = itemService.updateItem(item);
-        Map<String, Object> result = responseFactory.createResponse(
-            updated,
+        // Update item using facade service access
+        boolean updated = facade.getItemService().updateItem(item);
+
+        // Write response using facade
+        facade.writeStandardResponse(response, updated,
             "Item updated successfully",
-            "Failed to update item"
-        );
-
-        if (!updated) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-
-        mapper.writeValue(response.getWriter(), result);
+            "Failed to update item");
     }
 }

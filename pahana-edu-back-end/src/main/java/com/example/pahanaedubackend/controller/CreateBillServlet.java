@@ -1,9 +1,7 @@
 package com.example.pahanaedubackend.controller;
 
-import com.example.pahanaedubackend.factory.impl.FactoryProvider;
-import com.example.pahanaedubackend.factory.IResponseFactory;
+import com.example.pahanaedubackend.facade.ControllerFacade;
 import com.example.pahanaedubackend.model.BillItem;
-import com.example.pahanaedubackend.service.BillService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -11,37 +9,29 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 @WebServlet("/bills-create")
 public class CreateBillServlet extends HttpServlet {
-    private final BillService billService;
-    private final IResponseFactory responseFactory;
+    private final ControllerFacade facade;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    // Constructor using Standard Factory Pattern with Interfaces
+    // Constructor using Facade Pattern for simplified access
     public CreateBillServlet() {
-        FactoryProvider provider = FactoryProvider.getInstance();
-        this.billService = provider.getServiceFactory().getBillService();
-        this.responseFactory = provider.getResponseFactory();
+        this.facade = ControllerFacade.getInstance();
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        // Initialize response and validate session using facade
+        facade.initializeJsonResponse(response);
 
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("admin") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            Map<String, Object> errorResponse = responseFactory.createUnauthorizedResponse();
-            mapper.writeValue(response.getWriter(), errorResponse);
-            return;
+        if (!facade.validateAdminSession(request, response)) {
+            return; // Response already written by facade
         }
 
         try {
@@ -54,30 +44,26 @@ public class CreateBillServlet extends HttpServlet {
             // Validate customer account number
             if (customerAccountNumber == null || customerAccountNumber.trim().isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                Map<String, Object> errorResponse = responseFactory.createErrorResponse("Customer account number is required");
-                mapper.writeValue(response.getWriter(), errorResponse);
+                facade.writeStandardResponse(response, false, null, "Customer account number is required");
                 return;
             }
 
             if (customerAccountNumber.trim().length() < 6 || customerAccountNumber.trim().length() > 12) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                Map<String, Object> errorResponse = responseFactory.createErrorResponse("Customer account number must be between 6 and 12 characters");
-                mapper.writeValue(response.getWriter(), errorResponse);
+                facade.writeStandardResponse(response, false, null, "Customer account number must be between 6 and 12 characters");
                 return;
             }
 
             // Validate items list
             if (items == null || items.isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                Map<String, Object> errorResponse = responseFactory.createErrorResponse("At least one item is required for the bill");
-                mapper.writeValue(response.getWriter(), errorResponse);
+                facade.writeStandardResponse(response, false, null, "At least one item is required for the bill");
                 return;
             }
 
             if (items.size() > 50) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                Map<String, Object> errorResponse = responseFactory.createErrorResponse("Cannot add more than 50 items to a single bill");
-                mapper.writeValue(response.getWriter(), errorResponse);
+                facade.writeStandardResponse(response, false, null, "Cannot add more than 50 items to a single bill");
                 return;
             }
 
@@ -87,44 +73,39 @@ public class CreateBillServlet extends HttpServlet {
 
                 if (item.getItemId() <= 0) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    Map<String, Object> errorResponse = responseFactory.createErrorResponse("Invalid item ID at position " + (i + 1));
-                    mapper.writeValue(response.getWriter(), errorResponse);
+                    facade.writeStandardResponse(response, false, null, "Invalid item ID at position " + (i + 1));
                     return;
                 }
 
                 if (item.getQuantity() <= 0) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    Map<String, Object> errorResponse = responseFactory.createErrorResponse("Item quantity must be greater than 0 at position " + (i + 1));
-                    mapper.writeValue(response.getWriter(), errorResponse);
+                    facade.writeStandardResponse(response, false, null, "Item quantity must be greater than 0 at position " + (i + 1));
                     return;
                 }
 
                 if (item.getQuantity() > 1000) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    Map<String, Object> errorResponse = responseFactory.createErrorResponse("Item quantity cannot exceed 1,000 at position " + (i + 1));
-                    mapper.writeValue(response.getWriter(), errorResponse);
+                    facade.writeStandardResponse(response, false, null, "Item quantity cannot exceed 1,000 at position " + (i + 1));
                     return;
                 }
             }
 
-            // Call service
-            int billId = billService.createBill(customerAccountNumber.trim().toUpperCase(), items);
+            // Call service using facade
+            int billId = facade.getBillService().createBill(customerAccountNumber.trim().toUpperCase(), items);
 
             if (billId > 0) {
-                Map<String, Object> successResponse = responseFactory.createSuccessResponse("Bill created and stock updated");
+                Map<String, Object> successResponse = facade.getResponseFactory().createSuccessResponse("Bill created and stock updated");
                 successResponse.put("billId", billId);
-                mapper.writeValue(response.getWriter(), successResponse);
+                facade.writeJsonResponse(response, successResponse);
             } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                Map<String, Object> errorResponse = responseFactory.createErrorResponse("Insufficient stock or error occurred");
-                mapper.writeValue(response.getWriter(), errorResponse);
+                facade.writeStandardResponse(response, false, null, "Insufficient stock or error occurred");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            Map<String, Object> errorResponse = responseFactory.createErrorResponse("Server error");
-            mapper.writeValue(response.getWriter(), errorResponse);
+            facade.writeStandardResponse(response, false, null, "Server error");
         }
     }
 }
