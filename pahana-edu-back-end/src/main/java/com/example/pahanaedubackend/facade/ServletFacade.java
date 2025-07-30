@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * ControllerFacade implements the Facade Design Pattern to provide a simplified interface
+ * ServletFacade implements the Facade Design Pattern to provide a simplified interface
  * for servlet controllers to interact with the complex subsystems of the application.
  * 
  * This facade encapsulates:
@@ -36,10 +36,10 @@ import java.util.Map;
  * - Makes the system easier to maintain and modify
  * - Improves testability by centralizing common logic
  */
-public class ControllerFacade {
+public class ServletFacade {
     
     // Singleton instance
-    private static ControllerFacade instance;
+    private static ServletFacade instance;
     
     // Factory dependencies
     private final IServiceFactory serviceFactory;
@@ -52,7 +52,7 @@ public class ControllerFacade {
     /**
      * Private constructor to prevent direct instantiation
      */
-    private ControllerFacade() {
+    private ServletFacade() {
         FactoryProvider provider = FactoryProvider.getInstance();
         this.serviceFactory = provider.getServiceFactory();
         this.responseFactory = provider.getResponseFactory();
@@ -61,16 +61,16 @@ public class ControllerFacade {
     }
     
     /**
-     * Get the singleton instance of ControllerFacade
+     * Get the singleton instance of ServletFacade
      * Thread-safe implementation using double-checked locking
      * 
-     * @return ControllerFacade instance
+     * @return ServletFacade instance
      */
-    public static ControllerFacade getInstance() {
+    public static ServletFacade getInstance() {
         if (instance == null) {
-            synchronized (ControllerFacade.class) {
+            synchronized (ServletFacade.class) {
                 if (instance == null) {
-                    instance = new ControllerFacade();
+                    instance = new ServletFacade();
                 }
             }
         }

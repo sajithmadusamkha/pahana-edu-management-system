@@ -1,6 +1,6 @@
-package com.example.pahanaedubackend.controller;
+package com.example.pahanaedubackend.servlet;
 
-import com.example.pahanaedubackend.facade.ControllerFacade;
+import com.example.pahanaedubackend.facade.ServletFacade;
 import com.example.pahanaedubackend.model.BillItem;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,12 +15,12 @@ import java.util.Map;
 
 @WebServlet("/bills-create")
 public class CreateBillServlet extends HttpServlet {
-    private final ControllerFacade facade;
+    private final ServletFacade facade;
     private final ObjectMapper mapper = new ObjectMapper();
 
     // Constructor using Facade Pattern for simplified access
     public CreateBillServlet() {
-        this.facade = ControllerFacade.getInstance();
+        this.facade = ServletFacade.getInstance();
     }
 
     @Override
