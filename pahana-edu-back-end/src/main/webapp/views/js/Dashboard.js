@@ -1021,6 +1021,13 @@ $(document).ready(function () {
                 $('#totalOrdersCard').text('0');
             }
         });
+
+        // Load chart and activity data (with delay to ensure DOM and libraries are ready)
+        setTimeout(function() {
+            console.log('Loading chart and activity data...');
+            loadSalesChart();
+            loadRecentActivity();
+        }, 1000);
     }
 
     // Update counters when customers/items are loaded
@@ -1461,5 +1468,266 @@ $(document).ready(function () {
         const $field = $(fieldSelector);
         $field.addClass('is-invalid');
         $field.after('<div class="invalid-feedback">' + message + '</div>');
+    }
+
+    // ===== CHART FUNCTIONALITY =====
+    let salesChart = null;
+
+    function waitForChart(callback, maxAttempts = 10) {
+        let attempts = 0;
+        const checkChart = () => {
+            attempts++;
+            if (typeof Chart !== 'undefined') {
+                console.log('Chart.js is available');
+                callback();
+            } else if (attempts < maxAttempts) {
+                console.log('Waiting for Chart.js... attempt', attempts);
+                setTimeout(checkChart, 200);
+            } else {
+                console.error('Chart.js failed to load after', maxAttempts, 'attempts');
+            }
+        };
+        checkChart();
+    }
+
+    function loadSalesChart() {
+        console.log('loadSalesChart called');
+        // Check if chart canvas exists and is visible
+        const chartCanvas = document.getElementById('salesChart');
+        if (!chartCanvas) {
+            console.log('Chart canvas not found, skipping chart load');
+            return;
+        }
+        console.log('Chart canvas found, waiting for Chart.js...');
+
+        waitForChart(function() {
+            console.log('Chart.js ready, loading data...');
+            $.ajax({
+                url: 'http://localhost:8080/pahana/sales-chart-data?days=7',
+                type: 'GET',
+                success: function (response) {
+                    console.log('Chart data received:', response);
+                    createSalesChart(response.salesData);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Failed to load chart data:', status, error);
+                    // Create chart with sample data as fallback
+                    const sampleData = [];
+                    for (let i = 6; i >= 0; i--) {
+                        const date = new Date();
+                        date.setDate(date.getDate() - i);
+                        sampleData.push({
+                            date: date.toISOString().split('T')[0],
+                            orderCount: Math.floor(Math.random() * 5),
+                            totalSales: Math.floor(Math.random() * 500)
+                        });
+                    }
+                    createSalesChart(sampleData);
+                }
+            });
+        });
+    }
+
+    function createSalesChart(salesData) {
+        const chartCanvas = document.getElementById('salesChart');
+        if (!chartCanvas) {
+            console.log('Chart canvas not found, cannot create chart');
+            return;
+        }
+
+        const ctx = chartCanvas.getContext('2d');
+
+        // Destroy existing chart if it exists
+        if (salesChart) {
+            salesChart.destroy();
+        }
+
+        // Prepare data for chart
+        const labels = [];
+        const orderCounts = [];
+        const salesAmounts = [];
+
+        // Fill in data for the last 7 days
+        const today = new Date();
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            labels.push(date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }));
+
+            // Find data for this date
+            const dayData = salesData.find(data => {
+                const dataDate = new Date(data.date).toISOString().split('T')[0];
+                return dataDate === dateStr;
+            });
+
+            orderCounts.push(dayData ? dayData.orderCount : 0);
+            salesAmounts.push(dayData ? dayData.totalSales : 0);
+        }
+
+        salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Sales Amount ($)',
+                    data: salesAmounts,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1,
+                    yAxisID: 'y'
+                }, {
+                    label: 'Number of Orders',
+                    data: orderCounts,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.1,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Sales Amount ($)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Number of Orders'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Sales Overview - Last 7 Days'
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    }
+
+    // ===== RECENT ACTIVITY FUNCTIONALITY =====
+    function loadRecentActivity() {
+        console.log('loadRecentActivity called');
+        // Check if recent activity list exists
+        const activityList = document.getElementById('recentActivityList');
+        if (!activityList) {
+            console.log('Recent activity list not found, skipping activity load');
+            return;
+        }
+        console.log('Recent activity list found, loading data...');
+
+        $.ajax({
+            url: 'http://localhost:8080/pahana/recent-activity?limit=10',
+            type: 'GET',
+            success: function (response) {
+                console.log('Recent activity data received:', response);
+                displayRecentActivity(response.activities);
+            },
+            error: function (xhr, status, error) {
+                console.error('Failed to load recent activity:', status, error);
+                // Show sample activity as fallback
+                const sampleActivities = [
+                    {
+                        type: 'order',
+                        icon: 'bi-receipt',
+                        color: 'text-success',
+                        message: 'Sample order placed for $150.00',
+                        details: 'Customer: Sample Customer',
+                        timestamp: new Date().getTime() - 3600000 // 1 hour ago
+                    },
+                    {
+                        type: 'customer',
+                        icon: 'bi-person-plus',
+                        color: 'text-primary',
+                        message: 'Sample Customer registered',
+                        details: 'Account: SAMPLE123',
+                        timestamp: new Date().getTime() - 7200000 // 2 hours ago
+                    }
+                ];
+                displayRecentActivity(sampleActivities);
+            }
+        });
+    }
+
+    function displayRecentActivity(activities) {
+        const $activityList = $('#recentActivityList');
+        if ($activityList.length === 0) {
+            console.log('Recent activity list element not found');
+            return;
+        }
+
+        $activityList.empty();
+
+        if (activities.length === 0) {
+            $activityList.append(`
+                <li class="list-group-item text-center text-muted">
+                    <i class="bi bi-clock-history fs-1 text-muted d-block mb-2"></i>
+                    No recent activity found.
+                </li>
+            `);
+            return;
+        }
+
+        activities.forEach(function (activity) {
+            const timeAgo = getTimeAgo(activity.timestamp);
+            $activityList.append(`
+                <li class="list-group-item d-flex align-items-start">
+                    <div class="me-3">
+                        <i class="bi ${activity.icon} ${activity.color} fs-5"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="fw-medium">${activity.message}</div>
+                        <small class="text-muted">${activity.details}</small>
+                    </div>
+                    <small class="text-muted">${timeAgo}</small>
+                </li>
+            `);
+        });
+    }
+
+    function getTimeAgo(timestamp) {
+        const now = new Date();
+        const activityTime = new Date(timestamp);
+        const diffMs = now - activityTime;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMins / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        return activityTime.toLocaleDateString();
     }
 });

@@ -133,4 +133,65 @@ public class BillDAO {
 
         return 0;
     }
+
+    public List<Map<String, Object>> getDailySalesData(int days) {
+        String sql = "SELECT DATE(bill_date) as sale_date, COUNT(*) as order_count, SUM(total_amount) as total_sales " +
+                    "FROM bills " +
+                    "WHERE bill_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY) " +
+                    "GROUP BY DATE(bill_date) " +
+                    "ORDER BY sale_date ASC";
+
+        List<Map<String, Object>> salesData = new ArrayList<>();
+
+        try (Connection conn = DBUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, days);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Map<String, Object> dayData = new HashMap<>();
+                dayData.put("date", rs.getDate("sale_date"));
+                dayData.put("orderCount", rs.getInt("order_count"));
+                dayData.put("totalSales", rs.getDouble("total_sales"));
+                salesData.add(dayData);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return salesData;
+    }
+
+    public List<Map<String, Object>> getRecentBills(int limit) {
+        String sql = "SELECT b.id, b.bill_date, b.total_amount, c.full_name " +
+                    "FROM bills b " +
+                    "LEFT JOIN customer c ON b.customer_account_number = c.account_number " +
+                    "ORDER BY b.bill_date DESC " +
+                    "LIMIT ?";
+
+        List<Map<String, Object>> recentBills = new ArrayList<>();
+
+        try (Connection conn = DBUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, limit);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Map<String, Object> bill = new HashMap<>();
+                bill.put("id", rs.getInt("id"));
+                bill.put("billDate", rs.getTimestamp("bill_date"));
+                bill.put("totalAmount", rs.getDouble("total_amount"));
+                bill.put("customerName", rs.getString("full_name"));
+                recentBills.add(bill);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return recentBills;
+    }
 }

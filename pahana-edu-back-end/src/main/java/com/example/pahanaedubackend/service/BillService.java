@@ -50,4 +50,12 @@ public class BillService {
     public int getTotalBillsCount() {
         return billDAO.getTotalBillsCount();
     }
+
+    public List<Map<String, Object>> getDailySalesData(int days) {
+        return billDAO.getDailySalesData(days);
+    }
+
+    public List<Map<String, Object>> getRecentBills(int limit) {
+        return billDAO.getRecentBills(limit);
+    }
 }
