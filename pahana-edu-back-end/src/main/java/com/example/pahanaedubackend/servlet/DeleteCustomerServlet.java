@@ -1,4 +1,4 @@
-package com.example.pahanaedubackend.controller;
+package com.example.pahanaedubackend.servlet;
 
 import com.example.pahanaedubackend.factory.impl.FactoryProvider;
 import com.example.pahanaedubackend.factory.IResponseFactory;

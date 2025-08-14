@@ -1,7 +1,7 @@
-package com.example.pahanaedubackend.controller;
+package com.example.pahanaedubackend.servlet;
 
-import com.example.pahanaedubackend.facade.ControllerFacade;
-import com.example.pahanaedubackend.model.Customer;
+import com.example.pahanaedubackend.facade.ServletFacade;
+import com.example.pahanaedubackend.model.Item;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,13 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/customers")
-public class GetAllCustomersServlet extends HttpServlet {
-    private final ControllerFacade facade;
+@WebServlet("/items")
+public class GetAllItemsServlet extends HttpServlet {
+    private final ServletFacade facade;
 
     // Constructor using Facade Pattern for simplified access
-    public GetAllCustomersServlet() {
-        this.facade = ControllerFacade.getInstance();
+    public GetAllItemsServlet() {
+        this.facade = ServletFacade.getInstance();
     }
 
     @Override
@@ -31,8 +31,8 @@ public class GetAllCustomersServlet extends HttpServlet {
             return; // Response already written by facade
         }
 
-        // Get customers using facade service access and write response
-        List<Customer> customers = facade.getCustomerService().getAllCustomers();
-        facade.writeJsonResponse(response, customers);
+        // Get items using facade service access and write response
+        List<Item> items = facade.getItemService().getAllItems();
+        facade.writeJsonResponse(response, items);
     }
 }

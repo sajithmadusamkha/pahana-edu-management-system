@@ -46,4 +46,16 @@ public class BillService {
     public Map<String, Object> getBillDetails(int billId) {
         return billDAO.getBillDetails(billId);
     }
+
+    public int getTotalBillsCount() {
+        return billDAO.getTotalBillsCount();
+    }
+
+    public List<Map<String, Object>> getDailySalesData(int days) {
+        return billDAO.getDailySalesData(days);
+    }
+
+    public List<Map<String, Object>> getRecentBills(int limit) {
+        return billDAO.getRecentBills(limit);
+    }
 }
