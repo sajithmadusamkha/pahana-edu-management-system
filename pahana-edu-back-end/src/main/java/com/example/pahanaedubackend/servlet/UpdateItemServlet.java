@@ -1,6 +1,6 @@
-package com.example.pahanaedubackend.controller;
+package com.example.pahanaedubackend.servlet;
 
-import com.example.pahanaedubackend.facade.ControllerFacade;
+import com.example.pahanaedubackend.facade.ServletFacade;
 import com.example.pahanaedubackend.model.Item;
 import com.example.pahanaedubackend.util.ValidationUtil;
 
@@ -13,11 +13,11 @@ import java.io.IOException;
 
 @WebServlet("/items-update")
 public class UpdateItemServlet extends HttpServlet {
-    private final ControllerFacade facade;
+    private final ServletFacade facade;
 
     // Constructor using Facade Pattern for simplified access
     public UpdateItemServlet() {
-        this.facade = ControllerFacade.getInstance();
+        this.facade = ServletFacade.getInstance();
     }
 
     @Override

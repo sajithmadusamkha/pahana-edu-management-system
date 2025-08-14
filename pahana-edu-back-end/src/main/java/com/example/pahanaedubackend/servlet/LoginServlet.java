@@ -1,6 +1,6 @@
-package com.example.pahanaedubackend.controller;
+package com.example.pahanaedubackend.servlet;
 
-import com.example.pahanaedubackend.facade.ControllerFacade;
+import com.example.pahanaedubackend.facade.ServletFacade;
 import com.example.pahanaedubackend.model.Admin;
 
 import javax.servlet.ServletException;
@@ -12,11 +12,11 @@ import java.io.IOException;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-    private final ControllerFacade facade;
+    private final ServletFacade facade;
 
     // Constructor using Facade Pattern for simplified access
     public LoginServlet() {
-        this.facade = ControllerFacade.getInstance();
+        this.facade = ServletFacade.getInstance();
     }
 
     @Override
