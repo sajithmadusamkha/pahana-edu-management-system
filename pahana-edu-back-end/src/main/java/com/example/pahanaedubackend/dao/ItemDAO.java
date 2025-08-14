@@ -8,7 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ItemDAO {
     public boolean addItem(Item item) {
@@ -151,5 +153,35 @@ public class ItemDAO {
         }
 
         return false;
+    }
+
+    public List<Map<String, Object>> getRecentItems(int limit) {
+        String sql = "SELECT id, name, unit_price, quantity " +
+                    "FROM items " +
+                    "ORDER BY id DESC " +
+                    "LIMIT ?";
+
+        List<Map<String, Object>> recentItems = new ArrayList<>();
+
+        try (Connection conn = DBUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, limit);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Map<String, Object> item = new HashMap<>();
+                item.put("id", rs.getInt("id"));
+                item.put("name", rs.getString("name"));
+                item.put("price", rs.getDouble("unit_price"));
+                item.put("quantity", rs.getInt("quantity"));
+                recentItems.add(item);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return recentItems;
     }
 }

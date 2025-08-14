@@ -8,7 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CustomerDAO {
     public boolean addCustomer(Customer customer) {
@@ -110,5 +112,34 @@ public class CustomerDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<Map<String, Object>> getRecentCustomers(int limit) {
+        String sql = "SELECT id, account_number, full_name " +
+                    "FROM customer " +
+                    "ORDER BY id DESC " +
+                    "LIMIT ?";
+
+        List<Map<String, Object>> recentCustomers = new ArrayList<>();
+
+        try (Connection conn = DBUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, limit);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Map<String, Object> customer = new HashMap<>();
+                customer.put("id", rs.getInt("id"));
+                customer.put("accountNumber", rs.getString("account_number"));
+                customer.put("fullName", rs.getString("full_name"));
+                recentCustomers.add(customer);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return recentCustomers;
     }
 }

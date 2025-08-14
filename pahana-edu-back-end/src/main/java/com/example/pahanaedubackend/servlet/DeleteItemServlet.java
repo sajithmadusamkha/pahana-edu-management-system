@@ -1,9 +1,8 @@
-package com.example.pahanaedubackend.controller;
+package com.example.pahanaedubackend.servlet;
 
 import com.example.pahanaedubackend.factory.impl.FactoryProvider;
 import com.example.pahanaedubackend.factory.IResponseFactory;
-import com.example.pahanaedubackend.service.BillService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.pahanaedubackend.service.ItemService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,22 +11,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Map;
 
-@WebServlet("/bill")
-public class GetBillServlet extends HttpServlet {
-    private final BillService billService;
+@WebServlet("/item-delete")
+public class DeleteItemServlet extends HttpServlet {
+    private final ItemService itemService;
     private final IResponseFactory responseFactory;
 
     // Constructor using Standard Factory Pattern with Interfaces
-    public GetBillServlet() {
+    public DeleteItemServlet() {
         FactoryProvider provider = FactoryProvider.getInstance();
-        this.billService = provider.getServiceFactory().getBillService();
+        this.itemService = provider.getServiceFactory().getItemService();
         this.responseFactory = provider.getResponseFactory();
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("application/json");
@@ -40,23 +38,29 @@ public class GetBillServlet extends HttpServlet {
             return;
         }
 
-        int billId;
+        int itemId;
         try {
-            billId = Integer.parseInt(request.getParameter("id"));
+            itemId = Integer.parseInt(request.getParameter("id"));
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"success\":false,\"message\":\"Invalid bill ID\"}");
+            response.getWriter().write("{\"success\":false,\"message\":\"Invalid item ID\"}");
             return;
         }
 
-        Map<String, Object> billDetails = billService.getBillDetails(billId);
+        // Check if item is used in bills before attempting deletion
+        if (itemService.isItemUsedInBills(itemId)) {
+            response.setStatus(HttpServletResponse.SC_CONFLICT);
+            response.getWriter().write("{\"success\":false,\"message\":\"Cannot delete item: This item is used in existing bills. Please remove it from all bills before deletion.\"}");
+            return;
+        }
 
-        if (billDetails != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(response.getWriter(), billDetails);
+        boolean deleted = itemService.deleteItem(itemId);
+
+        if (deleted) {
+            response.getWriter().write("{\"success\":true,\"message\":\"Item deleted successfully\"}");
         } else {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.getWriter().write("{\"success\":false,\"message\":\"Bill not found\"}");
+            response.getWriter().write("{\"success\":false,\"message\":\"Item not found or delete failed\"}");
         }
     }
 }
