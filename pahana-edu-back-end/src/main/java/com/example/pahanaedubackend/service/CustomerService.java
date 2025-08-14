@@ -5,6 +5,7 @@ import com.example.pahanaedubackend.factory.impl.DAOFactory;
 import com.example.pahanaedubackend.model.Customer;
 
 import java.util.List;
+import java.util.Map;
 
 public class CustomerService {
     private final CustomerDAO customerDAO;
@@ -28,5 +29,9 @@ public class CustomerService {
 
     public boolean deleteCustomer(String accountNumber) {
         return customerDAO.deleteCustomer(accountNumber);
+    }
+
+    public List<Map<String, Object>> getRecentCustomers(int limit) {
+        return customerDAO.getRecentCustomers(limit);
     }
 }

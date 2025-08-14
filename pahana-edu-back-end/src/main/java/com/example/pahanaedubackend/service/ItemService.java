@@ -5,6 +5,7 @@ import com.example.pahanaedubackend.factory.impl.DAOFactory;
 import com.example.pahanaedubackend.model.Item;
 
 import java.util.List;
+import java.util.Map;
 
 public class ItemService {
     private final ItemDAO itemDAO;
@@ -32,5 +33,9 @@ public class ItemService {
 
     public boolean deleteItem(int itemId) {
         return itemDAO.deleteItem(itemId);
+    }
+
+    public List<Map<String, Object>> getRecentItems(int limit) {
+        return itemDAO.getRecentItems(limit);
     }
 }

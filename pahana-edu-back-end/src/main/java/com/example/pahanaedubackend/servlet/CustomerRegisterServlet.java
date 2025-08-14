@@ -1,6 +1,6 @@
-package com.example.pahanaedubackend.controller;
+package com.example.pahanaedubackend.servlet;
 
-import com.example.pahanaedubackend.facade.ControllerFacade;
+import com.example.pahanaedubackend.facade.ServletFacade;
 import com.example.pahanaedubackend.model.Customer;
 import com.example.pahanaedubackend.util.ValidationUtil;
 
@@ -14,11 +14,11 @@ import java.util.Map;
 
 @WebServlet("/register-customer")
 public class CustomerRegisterServlet extends HttpServlet {
-    private final ControllerFacade facade;
+    private final ServletFacade facade;
 
     // Constructor using Facade Pattern for simplified access
     public CustomerRegisterServlet() {
-        this.facade = ControllerFacade.getInstance();
+        this.facade = ServletFacade.getInstance();
     }
 
     @Override
