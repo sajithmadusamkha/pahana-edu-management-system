@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Test cases for LoginServlet - Happy Path scenarios only
+ * Test cases for LoginServlet
  */
 class LoginServletTest {
 
