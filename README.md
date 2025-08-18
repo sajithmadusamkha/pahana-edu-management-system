@@ -37,4 +37,20 @@ Phana edu management system is a book shop customer management, inventory tracki
 
 ## User Interfaces of the System
 
+Login Page
 ![image alt](https://github.com/sajithmadusamkha/pahana-edu-management-system/blob/2bfc586aaf4c26bfeaa6992e1e646e24b8996321/pahana-edu-back-end/s1.PNG)
+
+DashBoard
+![image alt](https://github.com/sajithmadusamkha/pahana-edu-management-system/blob/6e607f7dcc369f4dc29863e23907aa45d653ea91/pahana-edu-back-end/db.PNG)
+
+Customer
+![image alt](https://github.com/sajithmadusamkha/pahana-edu-management-system/blob/2b6e1e1e6fa6ca30b183f253b7bc3d080107292f/pahana-edu-back-end/csf.PNG)
+
+Item
+![image alt](https://github.com/sajithmadusamkha/pahana-edu-management-system/blob/2b6e1e1e6fa6ca30b183f253b7bc3d080107292f/pahana-edu-back-end/itw.PNG)
+
+Bill
+![image alt](https://github.com/sajithmadusamkha/pahana-edu-management-system/blob/2b6e1e1e6fa6ca30b183f253b7bc3d080107292f/pahana-edu-back-end/placev.PNG)
+
+Help Section
+![image alt](https://github.com/sajithmadusamkha/pahana-edu-management-system/blob/2b6e1e1e6fa6ca30b183f253b7bc3d080107292f/pahana-edu-back-end/hs.PNG)
