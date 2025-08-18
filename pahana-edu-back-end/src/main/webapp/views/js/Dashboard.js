@@ -87,7 +87,7 @@ $(document).ready(function () {
                                 <td>${customer.telephone}</td>
                                 <td>${customer.unitsConsumed}</td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-outline-primary me-1 update-btn" data-id="${customer.id}" data-bs-toggle="tooltip" title="Update Customer"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-sm btn-outline-primary update-btn" data-id="${customer.id}" data-bs-toggle="tooltip" title="Update Customer"><i class="bi bi-pencil"></i></button>
                                     <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${customer.id}" data-bs-toggle="tooltip" title="Delete Customer"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
@@ -295,7 +295,7 @@ $(document).ready(function () {
 
                 // Show success toast
                 $('.content').prepend(`
-                    <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3 z-3" role="alert" aria-live="assertive" aria-atomic="true">
                         <div class="d-flex">
                             <div class="toast-body">
                                 Customer added successfully!
@@ -305,7 +305,7 @@ $(document).ready(function () {
                     </div>
                 `);
                 const toastElement = $('.content .toast');
-                const toast = new bootstrap.Toast(toastElement[0], { delay: 2000 });
+                const toast = new bootstrap.Toast(toastElement[0], { delay: 4000 });
                 toast.show();
             },
             error: function (xhr, status, error) {
@@ -410,7 +410,7 @@ $(document).ready(function () {
 
                 // Show success toast
                 $('.content').prepend(`
-                    <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3 z-3" role="alert" aria-live="assertive" aria-atomic="true">
                         <div class="d-flex">
                             <div class="toast-body">
                                 Item "${itemData.name}" added successfully!
@@ -420,7 +420,7 @@ $(document).ready(function () {
                     </div>
                 `);
                 const toastElement = $('.content .toast');
-                const toast = new bootstrap.Toast(toastElement[0], { delay: 2000 });
+                const toast = new bootstrap.Toast(toastElement[0], { delay: 100000 });
                 toast.show();
             },
             error: function (xhr, status, error) {
@@ -689,7 +689,7 @@ $(document).ready(function () {
 
                 // Show success toast with customer details
                 $('.content').prepend(`
-                    <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3 z-3" role="alert" aria-live="assertive" aria-atomic="true">
                         <div class="d-flex">
                             <div class="toast-body">
                                 Customer "${fullName}" (${accountNumber}) updated successfully!
@@ -699,7 +699,7 @@ $(document).ready(function () {
                     </div>
                 `);
                 const toastElement = $('.content .toast');
-                const toast = new bootstrap.Toast(toastElement[0], { delay: 2000 });
+                const toast = new bootstrap.Toast(toastElement[0], { delay: 100000 });
                 toast.show();
 
                 // Reload all customers to refresh the table with updated data
@@ -817,7 +817,7 @@ $(document).ready(function () {
 
                 // Show success toast with item details
                 $('.content').prepend(`
-                    <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3 z-3" role="alert" aria-live="assertive" aria-atomic="true">
                         <div class="d-flex">
                             <div class="toast-body">
                                 Item "${name}" updated successfully!
@@ -827,7 +827,7 @@ $(document).ready(function () {
                     </div>
                 `);
                 const toastElement = $('.content .toast');
-                const toast = new bootstrap.Toast(toastElement[0], { delay: 2000 });
+                const toast = new bootstrap.Toast(toastElement[0], { delay: 3000 });
                 toast.show();
 
                 // Reload all items to refresh the table with updated data
@@ -870,7 +870,7 @@ $(document).ready(function () {
                 success: function (response) {
                     // Show success toast
                     $('.content').prepend(`
-                        <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3 z-3" role="alert" aria-live="assertive" aria-atomic="true">
                             <div class="d-flex">
                                 <div class="toast-body">
                                     Customer deleted successfully!
@@ -880,7 +880,7 @@ $(document).ready(function () {
                         </div>
                     `);
                     const toastElement = $('.content .toast');
-                    const toast = new bootstrap.Toast(toastElement[0], { delay: 2000 });
+                    const toast = new bootstrap.Toast(toastElement[0], { delay: 3000 });
                     toast.show();
 
                     // Reload all customers to refresh the table
@@ -920,7 +920,7 @@ $(document).ready(function () {
                 success: function (response) {
                     // Show success toast
                     $('.content').prepend(`
-                        <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3 z-3" role="alert" aria-live="assertive" aria-atomic="true">
                             <div class="d-flex">
                                 <div class="toast-body">
                                     Item "${itemName}" deleted successfully!
@@ -930,7 +930,7 @@ $(document).ready(function () {
                         </div>
                     `);
                     const toastElement = $('.content .toast');
-                    const toast = new bootstrap.Toast(toastElement[0], { delay: 2000 });
+                    const toast = new bootstrap.Toast(toastElement[0], { delay: 100000 });
                     toast.show();
 
                     // Reload all items to refresh the table
@@ -1441,7 +1441,7 @@ $(document).ready(function () {
     function showToast(type, message) {
         const bgClass = type === 'success' ? 'text-bg-success' : 'text-bg-danger';
         $('.content').prepend(`
-            <div class="toast align-items-center ${bgClass} border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast align-items-center ${bgClass} border-0 position-fixed top-0 end-0 m-3 z-3" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                         ${message}
@@ -1451,7 +1451,7 @@ $(document).ready(function () {
             </div>
         `);
         const toastElement = $('.content .toast').first();
-        const toast = new bootstrap.Toast(toastElement[0], { delay: 3000 });
+        const toast = new bootstrap.Toast(toastElement[0], { delay: 10000 });
         toast.show();
     }
 

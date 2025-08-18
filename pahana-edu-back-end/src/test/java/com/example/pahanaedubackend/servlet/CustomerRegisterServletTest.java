@@ -159,12 +159,14 @@ class CustomerRegisterServletTest {
     void testValidationSuccessCases() {
         // Test Case 1: Standard valid data
         ValidationUtil.ValidationResult result1 = ValidationUtil.validateCustomer(
-            "STANDARD123", "Standard Customer", "1234567890", "123 Standard Street, City", 150);
+            "STANDARD123", "Standard Customer", "1234567890", "123 Standard Street," +
+                        "City", 150);
         assertTrue(result1.isValid(), "Standard valid data should pass validation");
 
         // Test Case 2: Alphanumeric account number
         ValidationUtil.ValidationResult result2 = ValidationUtil.validateCustomer(
-            "ABC123XYZ", "Alpha Customer", "9876543210", "456 Alpha Avenue, Town", 300);
+            "ABC123XYZ", "Alpha Customer", "9876543210", "456 Alpha Avenue, Town",
+                300);
         assertTrue(result2.isValid(), "Alphanumeric account number should pass validation");
 
         // Test Case 3: Long but valid data

@@ -43,8 +43,6 @@ public class DAOFactory implements IDAOFactory {
     
     /**
      * Get the singleton instance of DAOFactory
-     * Thread-safe implementation using double-checked locking
-     * 
      * @return DAOFactory instance
      */
     public static DAOFactory getInstance() {

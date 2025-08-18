@@ -15,13 +15,11 @@ import java.io.IOException;
 @WebServlet("/item-delete")
 public class DeleteItemServlet extends HttpServlet {
     private final ItemService itemService;
-    private final IResponseFactory responseFactory;
 
     // Constructor using Standard Factory Pattern with Interfaces
     public DeleteItemServlet() {
         FactoryProvider provider = FactoryProvider.getInstance();
         this.itemService = provider.getServiceFactory().getItemService();
-        this.responseFactory = provider.getResponseFactory();
     }
 
     @Override

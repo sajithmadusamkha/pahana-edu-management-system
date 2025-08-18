@@ -18,13 +18,11 @@ import java.util.Map;
 @WebServlet("/delete-customer")
 public class DeleteCustomerServlet extends HttpServlet {
     private final CustomerService customerService;
-    private final IResponseFactory responseFactory;
 
     // Constructor using Standard Factory Pattern with Interfaces
     public DeleteCustomerServlet() {
         FactoryProvider provider = FactoryProvider.getInstance();
         this.customerService = provider.getServiceFactory().getCustomerService();
-        this.responseFactory = provider.getResponseFactory();
     }
 
     @Override

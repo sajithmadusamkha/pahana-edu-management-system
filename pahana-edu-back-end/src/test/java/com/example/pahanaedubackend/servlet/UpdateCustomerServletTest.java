@@ -232,7 +232,8 @@ class UpdateCustomerServletTest {
         // Test Case 2: Maximum valid values
         ValidationUtil.ValidationResult result2 = ValidationUtil.validateCustomer(
             "UPDMAX123456", "Very Long Updated Customer Name That Is Still Valid",
-            "9999999999", "Very Long Updated Address That Contains Multiple Words And Is Still Valid", 9000);
+            "9999999999",
+                "Very Long Updated Address That Contains Multiple Words And Is Still Valid", 9000);
         assertTrue(result2.isValid(), "Maximum valid update data should pass validation");
 
         // Test Case 3: Minimum valid values

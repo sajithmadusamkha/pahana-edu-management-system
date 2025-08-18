@@ -14,7 +14,7 @@ public class DBUtil {
 
     private DBUtil() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver"); // Load the driver once
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("MySQL JDBC Driver not found", e);
         }
